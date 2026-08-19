@@ -18,15 +18,40 @@ struct EventDetailSheet: View {
                 }
 
                 if !event.rooms.isEmpty {
-                    Section("Rom") {
+                    Section {
                         ForEach(event.rooms, id: \.self) { room in
                             if let url = room.mazeMapURL {
                                 Link(destination: url) {
-                                    Label(room.displayName, systemImage: "map")
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(room.name).font(.body)
+                                            if let building = room.building {
+                                                Text(building).font(.caption).foregroundStyle(.secondary)
+                                            }
+                                        }
+                                        Spacer()
+                                        Label("Åpne kart", systemImage: "map.fill")
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(.white)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(Color.accentColor, in: Capsule())
+                                    }
                                 }
                             } else {
-                                Label(room.displayName, systemImage: "mappin.and.ellipse")
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(room.name).font(.body)
+                                    if let building = room.building {
+                                        Text(building).font(.caption).foregroundStyle(.secondary)
+                                    }
+                                }
                             }
+                        }
+                    } header: {
+                        Text("Rom")
+                    } footer: {
+                        if event.rooms.contains(where: { $0.mazeMapURL != nil }) {
+                            Text("Åpner bygningens plassering på MazeMap.")
                         }
                     }
                 }

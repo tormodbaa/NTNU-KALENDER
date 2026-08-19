@@ -5,12 +5,36 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingClearConfirmation = false
+    @State private var showingProgramPicker = false
 
     private static let leadOptions = [5, 10, 15, 30, 60]
 
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    Button {
+                        showingProgramPicker = true
+                    } label: {
+                        HStack {
+                            Text("Mitt studieprogram")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Text(viewModel.myStudyProgram?.code ?? "Ikke valgt")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    if viewModel.myStudyProgram != nil {
+                        Button("Fjern studieprogram", role: .destructive) {
+                            Task { await viewModel.setMyStudyProgram(nil) }
+                        }
+                    }
+                } header: {
+                    Text("Studieprogram")
+                } footer: {
+                    Text("Mange fellesemner har flere parallelle grupper (ulikt rom/tidspunkt) registrert per studieprogram. Uten dette valgt vises alle grupper, som kan se ut som overlappende timer selv om de egentlig ikke gjelder deg.")
+                }
+
                 Section {
                     Toggle("Varsle før forelesning", isOn: notificationsBinding)
                     if viewModel.notificationsEnabled {
@@ -49,6 +73,22 @@ struct SettingsView: View {
             ) {
                 Button("Fjern alle", role: .destructive) { viewModel.removeAllCourses() }
                 Button("Avbryt", role: .cancel) {}
+            }
+            .sheet(isPresented: $showingProgramPicker) {
+                NavigationStack {
+                    StudyProgramSearchList { program in
+                        Task { await viewModel.setMyStudyProgram(program) }
+                        showingProgramPicker = false
+                    }
+                    .navigationTitle("Mitt studieprogram")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Avbryt") { showingProgramPicker = false }
+                        }
+                    }
+                }
+                .environmentObject(viewModel)
             }
         }
     }

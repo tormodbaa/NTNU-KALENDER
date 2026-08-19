@@ -23,6 +23,12 @@ final class ScheduleViewModel: ObservableObject {
         didSet { UserDefaults.standard.set(notificationLeadMinutes, forKey: Self.notificationLeadKey) }
     }
 
+    /// Emner med mange studieprogram registrerer ofte flere parallelle grupper (ulikt
+    /// rom/tidspunkt) som separate aktiviteter i NTNUs data. Uten å vite hvilket
+    /// studieprogram brukeren faktisk går på, kan vi ikke skille "min gruppe" fra andres —
+    /// da vises alle gruppene og de ser ut som kolliderende timer. Se `myStudyProgramCode`.
+    @Published private(set) var myStudyProgram: StudyProgramListing?
+
     private let service = NTNUScheduleService.shared
     private var catalog: [CourseListing] = []
     private var eventsCache: [Timeplan.ID: [ScheduleEvent]] = [:]
@@ -31,6 +37,9 @@ final class ScheduleViewModel: ObservableObject {
     private static let activeIDKey = "ntnu.timeplan.activeID.v2"
     private static let notificationsEnabledKey = "ntnu.timeplan.notificationsEnabled"
     private static let notificationLeadKey = "ntnu.timeplan.notificationLeadMinutes"
+    private static let myStudyProgramKey = "ntnu.timeplan.myStudyProgram"
+
+    private var myStudyProgramCode: String? { myStudyProgram?.code }
 
     var activeTimeplan: Timeplan {
         timeplaner.first(where: { $0.id == activeTimeplanID }) ?? timeplaner[0]
@@ -45,6 +54,21 @@ final class ScheduleViewModel: ObservableObject {
         notificationsEnabled = UserDefaults.standard.bool(forKey: Self.notificationsEnabledKey)
         let storedLead = UserDefaults.standard.integer(forKey: Self.notificationLeadKey)
         notificationLeadMinutes = storedLead == 0 ? 15 : storedLead
+        if let data = UserDefaults.standard.data(forKey: Self.myStudyProgramKey) {
+            myStudyProgram = try? JSONDecoder().decode(StudyProgramListing.self, from: data)
+        }
+    }
+
+    // MARK: - Mitt studieprogram (for å filtrere bort parallellgrupper som ikke gjelder deg)
+
+    func setMyStudyProgram(_ program: StudyProgramListing?) async {
+        myStudyProgram = program
+        if let program, let data = try? JSONEncoder().encode(program) {
+            UserDefaults.standard.set(data, forKey: Self.myStudyProgramKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.myStudyProgramKey)
+        }
+        await refreshAllEvents()
     }
 
     // MARK: - Katalog og søk
@@ -213,7 +237,7 @@ final class ScheduleViewModel: ObservableObject {
         var anyFailed = false
         for course in courses {
             do {
-                let fetched = try await service.fetchEvents(for: course)
+                let fetched = try await service.fetchEvents(for: course, programCode: myStudyProgramCode)
                 events.append(contentsOf: fetched)
             } catch {
                 anyFailed = true
@@ -235,7 +259,7 @@ final class ScheduleViewModel: ObservableObject {
         isLoadingEvents = true
         defer { isLoadingEvents = false }
         do {
-            let fetched = try await service.fetchEvents(for: course)
+            let fetched = try await service.fetchEvents(for: course, programCode: myStudyProgramCode)
             events.append(contentsOf: fetched)
             eventsCache[activeTimeplanID] = events
             recomputeConflicts()

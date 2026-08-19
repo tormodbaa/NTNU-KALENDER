@@ -120,7 +120,12 @@ actor NTNUScheduleService {
 
     // MARK: - Timeplan per emne
 
-    func fetchEvents(for course: SelectedCourse, version: String = "1") async throws -> [ScheduleEvent] {
+    /// - Parameter programCode: Studieprogramkoden brukeren har oppgitt som sin (se
+    ///   `ScheduleViewModel.myStudyProgram`). Store fellesemner har ofte flere parallelle
+    ///   grupper (ulikt rom/tidspunkt) registrert som separate aktiviteter — én per
+    ///   studieprogram-kombinasjon som tar faget. Uten dette filteret ser brukeren ALLE
+    ///   parallellgrupper og de blir feilaktig flagget som kolliderende med hverandre.
+    func fetchEvents(for course: SelectedCourse, version: String = "1", programCode: String? = nil) async throws -> [ScheduleEvent] {
         let semester = NTNUSemester.current()
 
         var url = URLComponents(string: "https://www.ntnu.no/web/studier/emner")!
@@ -146,6 +151,12 @@ actor NTNUScheduleService {
         let decoded = try JSONDecoder().decode(RawScheduleResponse.self, from: data)
         return decoded.schedules
             .filter { $0.artermin == semester.artermin && $0.status == "active" }
+            .filter { activity in
+                guard let programCode else { return true }
+                let keys = activity.studyProgramKeys ?? []
+                // Tomme studyProgramKeys betyr aktiviteten gjelder alle (f.eks. felles forelesning).
+                return keys.isEmpty || keys.contains(programCode)
+            }
             .compactMap { raw -> ScheduleEvent? in
                 let start = Date(timeIntervalSince1970: Double(raw.from) / 1000)
                 let end = Date(timeIntervalSince1970: Double(raw.to) / 1000)
