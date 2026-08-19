@@ -7,181 +7,181 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3D7181AB183F4BAF90F60E44 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547725897A73451295030F53 /* Course.swift */; };
-		70F07B6831A84EA0B4C21174 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAF095B91244DEAD025771 /* Room.swift */; };
-		BB19498B3A1F45679848DCDE /* ScheduleEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6797FF2C0D4B4D30948EBC14 /* ScheduleEvent.swift */; };
-		3D6E9602FD2849028088F0C1 /* StudyProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBAB1D83E0A4FF2BF0E05A9 /* StudyProgram.swift */; };
-		4E7DC615482B490697670310 /* Timeplan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F2454F6CE54BD78817DF93 /* Timeplan.swift */; };
-		EEDD3F99C8424DA7BD960651 /* NTNUTimeplanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768B42F7FB1547C9BCC14322 /* NTNUTimeplanApp.swift */; };
-		7D6F2702948341E892357F64 /* EventKitExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4505ED77A3045A7B32460FF /* EventKitExporter.swift */; };
-		34200A9EA68E46D382AB21D5 /* ICSExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6018D1A70C0241DD8AA006E1 /* ICSExporter.swift */; };
-		5A361FC93E6A4144978F49A7 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416164BB750E4090B28914E8 /* MockData.swift */; };
-		D81DA4243534477F8420419F /* NTNUScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE87DF4BE5834F25AE7F0C2B /* NTNUScheduleService.swift */; };
-		8AC45F42A65B470E9720E08D /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BE5D374B3F4F659D54E346 /* NotificationScheduler.swift */; };
-		714F846809B54F99B647DA16 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A0C7B1A51B4723A8BBBA07 /* DateExtensions.swift */; };
-		CBC9B529C9994857B0E7F008 /* DayLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8654E8A37A347E1BE1612AC /* DayLayout.swift */; };
-		748690FDFDCB43AE8F7673A3 /* NTNUSemester.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13EA93CADED4034B19C8601 /* NTNUSemester.swift */; };
-		A810A71476084841A955F5D1 /* TimelineMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9440DAFBB634CFBBBAAAF2C /* TimelineMetrics.swift */; };
-		0D804786D164433B9D6A6699 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372936341E554760AD75342B /* ScheduleViewModel.swift */; };
-		DC1DA2B6184F4FFA9F4728BB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776B82EDB3E14E5BBB5B120A /* ContentView.swift */; };
-		9F9F8D787A8D4C1D8BC3C3BD /* CourseSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BEA60B00E4B89B5D3E500 /* CourseSearchView.swift */; };
-		0AD69C175A1C4CE0AD4CA6FB /* DayPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827001E76E6646D0AE36C5EC /* DayPagerView.swift */; };
-		7108571CBE17418F8BC31A06 /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66ADF60D998C434F954FCDCC /* DayTimelineView.swift */; };
-		BED2F8973B5B4E12B4E5841A /* EventBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209832D2067A4EE895142220 /* EventBlockView.swift */; };
-		5D60DCE113704D0A98343570 /* EventDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434B7090A0D9442FADEC0EF9 /* EventDetailSheet.swift */; };
-		BFE68155B61A48049CE72E33 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C7A45CC7FC4CD38B19210F /* ScheduleView.swift */; };
-		E32CE2021B2548D0940FB40A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEF8CC685E34F8EA9F7E96B /* SettingsView.swift */; };
-		186DBA94667C46B2BEF504F9 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35C25D04D334A929FD3B3E6 /* ShareSheet.swift */; };
-		7290BE3110DF4D5B81CC9358 /* StudyProgramImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D431F26D384DF89426573E /* StudyProgramImportView.swift */; };
-		F0EC572BB8224A0B8526FB29 /* TimeplanManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B5D240E76048D593417C78 /* TimeplanManagerView.swift */; };
-		17D3850ED17F434892E5B523 /* WeekGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59669C64E714DA89C9613B1 /* WeekGridView.swift */; };
-		94198F8CFF5B4843AA3CD2E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 125B639DB8AB4B78BF1B10DB /* Assets.xcassets */; };
-		AD5386FCBF2345A784560234 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BDE44DF9B24F139165655F /* EventKit.framework */; };
+		D905990E6EB545389B9F1313 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D839005EE545699D8B0B1E /* Course.swift */; };
+		7A19CB4E6917424BA1988C9F /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DBCA096F7D4363B25527D0 /* Room.swift */; };
+		FD46A9300A25429798285A01 /* ScheduleEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061EE875FB644D38CD93C4D /* ScheduleEvent.swift */; };
+		C51DDF5D0AC844A3BC415518 /* StudyProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6A9B9BBAF640719185148B /* StudyProgram.swift */; };
+		6301CD8E02A14F63891AED04 /* Timeplan.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9999C987D3944CDA8EA8743 /* Timeplan.swift */; };
+		DF6AAEE501794532AE240718 /* NTNUTimeplanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 691B5744114F4A2A8457DD47 /* NTNUTimeplanApp.swift */; };
+		A235801AA1614BEABF7F0E97 /* EventKitExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A3F89A14D481FAA7918FD /* EventKitExporter.swift */; };
+		3247BA03CB2A4092A61EDD44 /* ICSExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAA058EB1DE4C158D7AC1C7 /* ICSExporter.swift */; };
+		1CFE8BE81EAC4834A96D8539 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6DA3AB698A4812B3CC9923 /* MockData.swift */; };
+		90704909D22E4B37959DCC20 /* NTNUScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A1AEC1FC94FA78F9512B9 /* NTNUScheduleService.swift */; };
+		815E645B3AF24E21A67AC028 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39F12BDE01E4374AE753078 /* NotificationScheduler.swift */; };
+		18B85B1EC94D4F16B3166A12 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1348C6D4B5D549FE91712BD6 /* DateExtensions.swift */; };
+		654CBA63E7064198A57482B9 /* DayLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E5A11CD3A14E0B96EB2A18 /* DayLayout.swift */; };
+		ACA536CBF0084FD6A59FFDBB /* NTNUSemester.swift in Sources */ = {isa = PBXBuildFile; fileRef = B42654EDC83F4C80A79E23BA /* NTNUSemester.swift */; };
+		46FDA7F572F34121A4EED283 /* TimelineMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B49EAC811F1447AA71C6609 /* TimelineMetrics.swift */; };
+		9AB06CED90AA4BC79B63DA46 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709B9C32BF634D38B6B3CB24 /* ScheduleViewModel.swift */; };
+		BE2B1E5495B046879BE5A281 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED8AD854D6343CC8A69C39D /* ContentView.swift */; };
+		9D3F09F590754DA2B36FF47B /* CourseSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F48C5F4E9A54F9E9F9172BB /* CourseSearchView.swift */; };
+		F3AF08D6D0764E1CBC874470 /* DayPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EF2F63C3944684A32747A2 /* DayPagerView.swift */; };
+		042B82D773C14610B9045E3E /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4303D266D13146ADB33943F0 /* DayTimelineView.swift */; };
+		11648EEAFD4A42B98661A793 /* EventBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2887C1BE4C42DEAAB018F6 /* EventBlockView.swift */; };
+		B29A52F0E9D944978D70903E /* EventDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 384248C99A79458AB7C0A106 /* EventDetailSheet.swift */; };
+		3349DD13C10142C9AEA26000 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80412C916FC94870BEBC73DC /* ScheduleView.swift */; };
+		ECAE66FDB7A341868071D4EC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8616A6AC707241BDB199B4C5 /* SettingsView.swift */; };
+		4FE80EE0E2984B27A2BDCD5D /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595190387ADF40C1B1EEF000 /* ShareSheet.swift */; };
+		9AB9CBC6A1704E248E2D9997 /* StudyProgramImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1726FC55DDB2496FAEA86039 /* StudyProgramImportView.swift */; };
+		8F83340A467A4595BBA671E5 /* TimeplanManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DADC47EC49446EB8B63BA2 /* TimeplanManagerView.swift */; };
+		0801A96D089C4A6695EFE5F2 /* WeekGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F565E4422C2A48E2BDAC8A7D /* WeekGridView.swift */; };
+		F0AA2B526C114C079BECF4B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 733075840C1743478044C400 /* Assets.xcassets */; };
+		8459F80AF9534D69BA25F5CE /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55BE997284284EE1995A223F /* EventKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		547725897A73451295030F53 /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Course.swift"; sourceTree = "<group>"; };
-		63BAF095B91244DEAD025771 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Room.swift"; sourceTree = "<group>"; };
-		6797FF2C0D4B4D30948EBC14 /* ScheduleEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleEvent.swift"; sourceTree = "<group>"; };
-		EFBAB1D83E0A4FF2BF0E05A9 /* StudyProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StudyProgram.swift"; sourceTree = "<group>"; };
-		10F2454F6CE54BD78817DF93 /* Timeplan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timeplan.swift"; sourceTree = "<group>"; };
-		768B42F7FB1547C9BCC14322 /* NTNUTimeplanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUTimeplanApp.swift"; sourceTree = "<group>"; };
-		F4505ED77A3045A7B32460FF /* EventKitExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventKitExporter.swift"; sourceTree = "<group>"; };
-		6018D1A70C0241DD8AA006E1 /* ICSExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICSExporter.swift"; sourceTree = "<group>"; };
-		416164BB750E4090B28914E8 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MockData.swift"; sourceTree = "<group>"; };
-		AE87DF4BE5834F25AE7F0C2B /* NTNUScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUScheduleService.swift"; sourceTree = "<group>"; };
-		30BE5D374B3F4F659D54E346 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationScheduler.swift"; sourceTree = "<group>"; };
-		A7A0C7B1A51B4723A8BBBA07 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateExtensions.swift"; sourceTree = "<group>"; };
-		D8654E8A37A347E1BE1612AC /* DayLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayLayout.swift"; sourceTree = "<group>"; };
-		F13EA93CADED4034B19C8601 /* NTNUSemester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUSemester.swift"; sourceTree = "<group>"; };
-		D9440DAFBB634CFBBBAAAF2C /* TimelineMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineMetrics.swift"; sourceTree = "<group>"; };
-		372936341E554760AD75342B /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleViewModel.swift"; sourceTree = "<group>"; };
-		776B82EDB3E14E5BBB5B120A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
-		664BEA60B00E4B89B5D3E500 /* CourseSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CourseSearchView.swift"; sourceTree = "<group>"; };
-		827001E76E6646D0AE36C5EC /* DayPagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayPagerView.swift"; sourceTree = "<group>"; };
-		66ADF60D998C434F954FCDCC /* DayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayTimelineView.swift"; sourceTree = "<group>"; };
-		209832D2067A4EE895142220 /* EventBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventBlockView.swift"; sourceTree = "<group>"; };
-		434B7090A0D9442FADEC0EF9 /* EventDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventDetailSheet.swift"; sourceTree = "<group>"; };
-		71C7A45CC7FC4CD38B19210F /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleView.swift"; sourceTree = "<group>"; };
-		9DEF8CC685E34F8EA9F7E96B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
-		C35C25D04D334A929FD3B3E6 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShareSheet.swift"; sourceTree = "<group>"; };
-		99D431F26D384DF89426573E /* StudyProgramImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StudyProgramImportView.swift"; sourceTree = "<group>"; };
-		87B5D240E76048D593417C78 /* TimeplanManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeplanManagerView.swift"; sourceTree = "<group>"; };
-		D59669C64E714DA89C9613B1 /* WeekGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeekGridView.swift"; sourceTree = "<group>"; };
-		125B639DB8AB4B78BF1B10DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		18BDE44DF9B24F139165655F /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
-		3EF91F684A5340FCB22A317E /* NTNUTimeplan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTNUTimeplan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		75D839005EE545699D8B0B1E /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Course.swift"; sourceTree = "<group>"; };
+		D9DBCA096F7D4363B25527D0 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Room.swift"; sourceTree = "<group>"; };
+		6061EE875FB644D38CD93C4D /* ScheduleEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleEvent.swift"; sourceTree = "<group>"; };
+		DA6A9B9BBAF640719185148B /* StudyProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StudyProgram.swift"; sourceTree = "<group>"; };
+		C9999C987D3944CDA8EA8743 /* Timeplan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timeplan.swift"; sourceTree = "<group>"; };
+		691B5744114F4A2A8457DD47 /* NTNUTimeplanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUTimeplanApp.swift"; sourceTree = "<group>"; };
+		1B9A3F89A14D481FAA7918FD /* EventKitExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventKitExporter.swift"; sourceTree = "<group>"; };
+		0DAA058EB1DE4C158D7AC1C7 /* ICSExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICSExporter.swift"; sourceTree = "<group>"; };
+		8D6DA3AB698A4812B3CC9923 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MockData.swift"; sourceTree = "<group>"; };
+		F95A1AEC1FC94FA78F9512B9 /* NTNUScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUScheduleService.swift"; sourceTree = "<group>"; };
+		F39F12BDE01E4374AE753078 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationScheduler.swift"; sourceTree = "<group>"; };
+		1348C6D4B5D549FE91712BD6 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateExtensions.swift"; sourceTree = "<group>"; };
+		38E5A11CD3A14E0B96EB2A18 /* DayLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayLayout.swift"; sourceTree = "<group>"; };
+		B42654EDC83F4C80A79E23BA /* NTNUSemester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTNUSemester.swift"; sourceTree = "<group>"; };
+		9B49EAC811F1447AA71C6609 /* TimelineMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineMetrics.swift"; sourceTree = "<group>"; };
+		709B9C32BF634D38B6B3CB24 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleViewModel.swift"; sourceTree = "<group>"; };
+		0ED8AD854D6343CC8A69C39D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
+		2F48C5F4E9A54F9E9F9172BB /* CourseSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CourseSearchView.swift"; sourceTree = "<group>"; };
+		34EF2F63C3944684A32747A2 /* DayPagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayPagerView.swift"; sourceTree = "<group>"; };
+		4303D266D13146ADB33943F0 /* DayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DayTimelineView.swift"; sourceTree = "<group>"; };
+		AC2887C1BE4C42DEAAB018F6 /* EventBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventBlockView.swift"; sourceTree = "<group>"; };
+		384248C99A79458AB7C0A106 /* EventDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventDetailSheet.swift"; sourceTree = "<group>"; };
+		80412C916FC94870BEBC73DC /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScheduleView.swift"; sourceTree = "<group>"; };
+		8616A6AC707241BDB199B4C5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+		595190387ADF40C1B1EEF000 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShareSheet.swift"; sourceTree = "<group>"; };
+		1726FC55DDB2496FAEA86039 /* StudyProgramImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StudyProgramImportView.swift"; sourceTree = "<group>"; };
+		30DADC47EC49446EB8B63BA2 /* TimeplanManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeplanManagerView.swift"; sourceTree = "<group>"; };
+		F565E4422C2A48E2BDAC8A7D /* WeekGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeekGridView.swift"; sourceTree = "<group>"; };
+		733075840C1743478044C400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		55BE997284284EE1995A223F /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		36C7B292FC6B46F58DE1F4F2 /* NTNUTimeplan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTNUTimeplan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		33079BE5501C44938B4A5D5F /* Frameworks */ = {
+		9FB153C013DE4F9582DB6154 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD5386FCBF2345A784560234 /* EventKit.framework in Frameworks */,
+				8459F80AF9534D69BA25F5CE /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		15D1B5EAABBA40F481C27AD8 = {
+		476AF3C8FD284E14AAA51D3F = {
 			isa = PBXGroup;
 			children = (
-				F3A7DEDBFA344E25B4A94CDE /* NTNUTimeplan */,
-				35532ECEC0F44DB592E385D4 /* Frameworks */,
-				E164E30DDDA74E4C8D256857 /* Products */,
+				0DDFEC7FE5244EBDB021B737 /* NTNUTimeplan */,
+				01CDCAD060884306BE4A85D8 /* Frameworks */,
+				55436D3BA4994F16B50BB9D6 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		F3A7DEDBFA344E25B4A94CDE /* NTNUTimeplan */ = {
+		0DDFEC7FE5244EBDB021B737 /* NTNUTimeplan */ = {
 			isa = PBXGroup;
 			children = (
-				768B42F7FB1547C9BCC14322 /* NTNUTimeplanApp.swift */,
-				C550852159434FA4935B2A61 /* Models */,
-				6F5606DCD74742C498D04DB9 /* Services */,
-				4696C147B58844229C27BB5E /* Utilities */,
-				F7AD033425644DE589525E29 /* ViewModels */,
-				40FF9AB4FDBE4E0C8C6F5472 /* Views */,
-				125B639DB8AB4B78BF1B10DB /* Assets.xcassets */,
+				691B5744114F4A2A8457DD47 /* NTNUTimeplanApp.swift */,
+				63B5AA406310443794E71B68 /* Models */,
+				FCF5174B576D41BC9B72BC56 /* Services */,
+				83157F7332494321A59BD628 /* Utilities */,
+				8DABBAB490CE4322B9A19AC0 /* ViewModels */,
+				EF2DC6F23DA442DD9B0EBAC0 /* Views */,
+				733075840C1743478044C400 /* Assets.xcassets */,
 			);
 			path = NTNUTimeplan;
 			sourceTree = "<group>";
 		};
-		C550852159434FA4935B2A61 /* Models */ = {
+		63B5AA406310443794E71B68 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				547725897A73451295030F53 /* Course.swift */,
-				63BAF095B91244DEAD025771 /* Room.swift */,
-				6797FF2C0D4B4D30948EBC14 /* ScheduleEvent.swift */,
-				EFBAB1D83E0A4FF2BF0E05A9 /* StudyProgram.swift */,
-				10F2454F6CE54BD78817DF93 /* Timeplan.swift */,
+				75D839005EE545699D8B0B1E /* Course.swift */,
+				D9DBCA096F7D4363B25527D0 /* Room.swift */,
+				6061EE875FB644D38CD93C4D /* ScheduleEvent.swift */,
+				DA6A9B9BBAF640719185148B /* StudyProgram.swift */,
+				C9999C987D3944CDA8EA8743 /* Timeplan.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		6F5606DCD74742C498D04DB9 /* Services */ = {
+		FCF5174B576D41BC9B72BC56 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				F4505ED77A3045A7B32460FF /* EventKitExporter.swift */,
-				6018D1A70C0241DD8AA006E1 /* ICSExporter.swift */,
-				416164BB750E4090B28914E8 /* MockData.swift */,
-				AE87DF4BE5834F25AE7F0C2B /* NTNUScheduleService.swift */,
-				30BE5D374B3F4F659D54E346 /* NotificationScheduler.swift */,
+				1B9A3F89A14D481FAA7918FD /* EventKitExporter.swift */,
+				0DAA058EB1DE4C158D7AC1C7 /* ICSExporter.swift */,
+				8D6DA3AB698A4812B3CC9923 /* MockData.swift */,
+				F95A1AEC1FC94FA78F9512B9 /* NTNUScheduleService.swift */,
+				F39F12BDE01E4374AE753078 /* NotificationScheduler.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		4696C147B58844229C27BB5E /* Utilities */ = {
+		83157F7332494321A59BD628 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				A7A0C7B1A51B4723A8BBBA07 /* DateExtensions.swift */,
-				D8654E8A37A347E1BE1612AC /* DayLayout.swift */,
-				F13EA93CADED4034B19C8601 /* NTNUSemester.swift */,
-				D9440DAFBB634CFBBBAAAF2C /* TimelineMetrics.swift */,
+				1348C6D4B5D549FE91712BD6 /* DateExtensions.swift */,
+				38E5A11CD3A14E0B96EB2A18 /* DayLayout.swift */,
+				B42654EDC83F4C80A79E23BA /* NTNUSemester.swift */,
+				9B49EAC811F1447AA71C6609 /* TimelineMetrics.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		F7AD033425644DE589525E29 /* ViewModels */ = {
+		8DABBAB490CE4322B9A19AC0 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				372936341E554760AD75342B /* ScheduleViewModel.swift */,
+				709B9C32BF634D38B6B3CB24 /* ScheduleViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		40FF9AB4FDBE4E0C8C6F5472 /* Views */ = {
+		EF2DC6F23DA442DD9B0EBAC0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				776B82EDB3E14E5BBB5B120A /* ContentView.swift */,
-				664BEA60B00E4B89B5D3E500 /* CourseSearchView.swift */,
-				827001E76E6646D0AE36C5EC /* DayPagerView.swift */,
-				66ADF60D998C434F954FCDCC /* DayTimelineView.swift */,
-				209832D2067A4EE895142220 /* EventBlockView.swift */,
-				434B7090A0D9442FADEC0EF9 /* EventDetailSheet.swift */,
-				71C7A45CC7FC4CD38B19210F /* ScheduleView.swift */,
-				9DEF8CC685E34F8EA9F7E96B /* SettingsView.swift */,
-				C35C25D04D334A929FD3B3E6 /* ShareSheet.swift */,
-				99D431F26D384DF89426573E /* StudyProgramImportView.swift */,
-				87B5D240E76048D593417C78 /* TimeplanManagerView.swift */,
-				D59669C64E714DA89C9613B1 /* WeekGridView.swift */,
+				0ED8AD854D6343CC8A69C39D /* ContentView.swift */,
+				2F48C5F4E9A54F9E9F9172BB /* CourseSearchView.swift */,
+				34EF2F63C3944684A32747A2 /* DayPagerView.swift */,
+				4303D266D13146ADB33943F0 /* DayTimelineView.swift */,
+				AC2887C1BE4C42DEAAB018F6 /* EventBlockView.swift */,
+				384248C99A79458AB7C0A106 /* EventDetailSheet.swift */,
+				80412C916FC94870BEBC73DC /* ScheduleView.swift */,
+				8616A6AC707241BDB199B4C5 /* SettingsView.swift */,
+				595190387ADF40C1B1EEF000 /* ShareSheet.swift */,
+				1726FC55DDB2496FAEA86039 /* StudyProgramImportView.swift */,
+				30DADC47EC49446EB8B63BA2 /* TimeplanManagerView.swift */,
+				F565E4422C2A48E2BDAC8A7D /* WeekGridView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
-		35532ECEC0F44DB592E385D4 /* Frameworks */ = {
+		01CDCAD060884306BE4A85D8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				18BDE44DF9B24F139165655F /* EventKit.framework */,
+				55BE997284284EE1995A223F /* EventKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E164E30DDDA74E4C8D256857 /* Products */ = {
+		55436D3BA4994F16B50BB9D6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3EF91F684A5340FCB22A317E /* NTNUTimeplan.app */,
+				36C7B292FC6B46F58DE1F4F2 /* NTNUTimeplan.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,13 +189,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4B95D3AC897747B29BE44115 /* NTNUTimeplan */ = {
+		0C1E6DB148D64D7ABBA4A1D2 /* NTNUTimeplan */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5DAA247D9A804FA8B638C9D0 /* Build configuration list for PBXNativeTarget "NTNUTimeplan" */;
+			buildConfigurationList = CB179F608A1E46E793964485 /* Build configuration list for PBXNativeTarget "NTNUTimeplan" */;
 			buildPhases = (
-				1343F1FED28841C294F7651A /* Sources */,
-				33079BE5501C44938B4A5D5F /* Frameworks */,
-				881D4C30290A4D64B7F4ACCE /* Resources */,
+				1F817327A2974A589B5ABAAF /* Sources */,
+				9FB153C013DE4F9582DB6154 /* Frameworks */,
+				F1B25C62F402491E8BBB2417 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -203,20 +203,20 @@
 			);
 			name = NTNUTimeplan;
 			productName = NTNUTimeplan;
-			productReference = 3EF91F684A5340FCB22A317E /* NTNUTimeplan.app */;
+			productReference = 36C7B292FC6B46F58DE1F4F2 /* NTNUTimeplan.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		83D528BF72CF4E048732471F /* Project object */ = {
+		BD341A23212A42ADA8AC6710 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = B0BE8E61457E469987D98020 /* Build configuration list for PBXProject "NTNUTimeplan" */;
+			buildConfigurationList = E2D4D1C8B2D14A26B7AC4DC4 /* Build configuration list for PBXProject "NTNUTimeplan" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -224,74 +224,72 @@
 				en,
 				Base,
 			);
-			mainGroup = 15D1B5EAABBA40F481C27AD8;
-			productRefGroup = E164E30DDDA74E4C8D256857 /* Products */;
+			mainGroup = 476AF3C8FD284E14AAA51D3F;
+			productRefGroup = 55436D3BA4994F16B50BB9D6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4B95D3AC897747B29BE44115 /* NTNUTimeplan */,
+				0C1E6DB148D64D7ABBA4A1D2 /* NTNUTimeplan */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		881D4C30290A4D64B7F4ACCE /* Resources */ = {
+		F1B25C62F402491E8BBB2417 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94198F8CFF5B4843AA3CD2E1 /* Assets.xcassets in Resources */,
+				F0AA2B526C114C079BECF4B3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1343F1FED28841C294F7651A /* Sources */ = {
+		1F817327A2974A589B5ABAAF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D7181AB183F4BAF90F60E44 /* Course.swift in Sources */,
-				70F07B6831A84EA0B4C21174 /* Room.swift in Sources */,
-				BB19498B3A1F45679848DCDE /* ScheduleEvent.swift in Sources */,
-				3D6E9602FD2849028088F0C1 /* StudyProgram.swift in Sources */,
-				4E7DC615482B490697670310 /* Timeplan.swift in Sources */,
-				EEDD3F99C8424DA7BD960651 /* NTNUTimeplanApp.swift in Sources */,
-				7D6F2702948341E892357F64 /* EventKitExporter.swift in Sources */,
-				34200A9EA68E46D382AB21D5 /* ICSExporter.swift in Sources */,
-				5A361FC93E6A4144978F49A7 /* MockData.swift in Sources */,
-				D81DA4243534477F8420419F /* NTNUScheduleService.swift in Sources */,
-				8AC45F42A65B470E9720E08D /* NotificationScheduler.swift in Sources */,
-				714F846809B54F99B647DA16 /* DateExtensions.swift in Sources */,
-				CBC9B529C9994857B0E7F008 /* DayLayout.swift in Sources */,
-				748690FDFDCB43AE8F7673A3 /* NTNUSemester.swift in Sources */,
-				A810A71476084841A955F5D1 /* TimelineMetrics.swift in Sources */,
-				0D804786D164433B9D6A6699 /* ScheduleViewModel.swift in Sources */,
-				DC1DA2B6184F4FFA9F4728BB /* ContentView.swift in Sources */,
-				9F9F8D787A8D4C1D8BC3C3BD /* CourseSearchView.swift in Sources */,
-				0AD69C175A1C4CE0AD4CA6FB /* DayPagerView.swift in Sources */,
-				7108571CBE17418F8BC31A06 /* DayTimelineView.swift in Sources */,
-				BED2F8973B5B4E12B4E5841A /* EventBlockView.swift in Sources */,
-				5D60DCE113704D0A98343570 /* EventDetailSheet.swift in Sources */,
-				BFE68155B61A48049CE72E33 /* ScheduleView.swift in Sources */,
-				E32CE2021B2548D0940FB40A /* SettingsView.swift in Sources */,
-				186DBA94667C46B2BEF504F9 /* ShareSheet.swift in Sources */,
-				7290BE3110DF4D5B81CC9358 /* StudyProgramImportView.swift in Sources */,
-				F0EC572BB8224A0B8526FB29 /* TimeplanManagerView.swift in Sources */,
-				17D3850ED17F434892E5B523 /* WeekGridView.swift in Sources */,
+				D905990E6EB545389B9F1313 /* Course.swift in Sources */,
+				7A19CB4E6917424BA1988C9F /* Room.swift in Sources */,
+				FD46A9300A25429798285A01 /* ScheduleEvent.swift in Sources */,
+				C51DDF5D0AC844A3BC415518 /* StudyProgram.swift in Sources */,
+				6301CD8E02A14F63891AED04 /* Timeplan.swift in Sources */,
+				DF6AAEE501794532AE240718 /* NTNUTimeplanApp.swift in Sources */,
+				A235801AA1614BEABF7F0E97 /* EventKitExporter.swift in Sources */,
+				3247BA03CB2A4092A61EDD44 /* ICSExporter.swift in Sources */,
+				1CFE8BE81EAC4834A96D8539 /* MockData.swift in Sources */,
+				90704909D22E4B37959DCC20 /* NTNUScheduleService.swift in Sources */,
+				815E645B3AF24E21A67AC028 /* NotificationScheduler.swift in Sources */,
+				18B85B1EC94D4F16B3166A12 /* DateExtensions.swift in Sources */,
+				654CBA63E7064198A57482B9 /* DayLayout.swift in Sources */,
+				ACA536CBF0084FD6A59FFDBB /* NTNUSemester.swift in Sources */,
+				46FDA7F572F34121A4EED283 /* TimelineMetrics.swift in Sources */,
+				9AB06CED90AA4BC79B63DA46 /* ScheduleViewModel.swift in Sources */,
+				BE2B1E5495B046879BE5A281 /* ContentView.swift in Sources */,
+				9D3F09F590754DA2B36FF47B /* CourseSearchView.swift in Sources */,
+				F3AF08D6D0764E1CBC874470 /* DayPagerView.swift in Sources */,
+				042B82D773C14610B9045E3E /* DayTimelineView.swift in Sources */,
+				11648EEAFD4A42B98661A793 /* EventBlockView.swift in Sources */,
+				B29A52F0E9D944978D70903E /* EventDetailSheet.swift in Sources */,
+				3349DD13C10142C9AEA26000 /* ScheduleView.swift in Sources */,
+				ECAE66FDB7A341868071D4EC /* SettingsView.swift in Sources */,
+				4FE80EE0E2984B27A2BDCD5D /* ShareSheet.swift in Sources */,
+				9AB9CBC6A1704E248E2D9997 /* StudyProgramImportView.swift in Sources */,
+				8F83340A467A4595BBA671E5 /* TimeplanManagerView.swift in Sources */,
+				0801A96D089C4A6695EFE5F2 /* WeekGridView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		853C9DD1794249D1B87E957A /* Debug */ = {
+		FF2730BFF2564C4B96113D09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Appen kan legge timeplanen din inn i Kalender-appen.";
@@ -311,14 +309,12 @@
 			};
 			name = Debug;
 		};
-		ED56BC23CE0D42E895BBDB52 /* Release */ = {
+		9040904E587D4BE0A6658C76 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Appen kan legge timeplanen din inn i Kalender-appen.";
@@ -338,7 +334,7 @@
 			};
 			name = Release;
 		};
-		78FBA00292714138B3394146 /* Debug */ = {
+		24ED994F3E234DA6AF8C66AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -358,7 +354,7 @@
 			};
 			name = Debug;
 		};
-		DD1702652BD44A44BAC2E8C7 /* Release */ = {
+		B2BE69DCB58F4D07959B7E38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -380,20 +376,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5DAA247D9A804FA8B638C9D0 /* Build configuration list for PBXNativeTarget "NTNUTimeplan" */ = {
+		CB179F608A1E46E793964485 /* Build configuration list for PBXNativeTarget "NTNUTimeplan" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				853C9DD1794249D1B87E957A /* Debug */,
-				ED56BC23CE0D42E895BBDB52 /* Release */,
+				FF2730BFF2564C4B96113D09 /* Debug */,
+				9040904E587D4BE0A6658C76 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B0BE8E61457E469987D98020 /* Build configuration list for PBXProject "NTNUTimeplan" */ = {
+		E2D4D1C8B2D14A26B7AC4DC4 /* Build configuration list for PBXProject "NTNUTimeplan" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				78FBA00292714138B3394146 /* Debug */,
-				DD1702652BD44A44BAC2E8C7 /* Release */,
+				24ED994F3E234DA6AF8C66AE /* Debug */,
+				B2BE69DCB58F4D07959B7E38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -401,5 +397,5 @@
 /* End XCConfigurationList section */
 
 	};
-	rootObject = 83D528BF72CF4E048732471F /* Project object */;
+	rootObject = BD341A23212A42ADA8AC6710 /* Project object */;
 }
