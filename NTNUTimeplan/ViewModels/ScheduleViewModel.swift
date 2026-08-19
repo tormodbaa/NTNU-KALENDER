@@ -147,6 +147,14 @@ final class ScheduleViewModel: ObservableObject {
 
     // MARK: - Studieretning-import
 
+    func loadProgramCatalog() async throws -> [StudyProgramListing] {
+        try await service.programCatalog()
+    }
+
+    func searchPrograms(_ query: String, in programs: [StudyProgramListing]) -> [StudyProgramListing] {
+        service.searchPrograms(query, in: programs)
+    }
+
     func fetchStudyPlanYears(programCode: String) async throws -> [Int] {
         try await service.fetchStudyPlanYears(programCode: programCode)
     }

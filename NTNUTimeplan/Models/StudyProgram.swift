@@ -1,5 +1,15 @@
 import Foundation
 
+/// Ett studieprogram slik det listes i NTNUs samlede studieoversikt (bulk-hentet
+/// og cachet lokalt, akkurat som `CourseListing`).
+struct StudyProgramListing: Identifiable, Codable, Hashable {
+    let code: String
+    let name: String
+    let studyLevel: String
+
+    var id: String { code }
+}
+
 /// Ett emne slik det listes i en studieplan for et studieprogram/kull.
 struct StudyPlanCourse: Identifiable, Hashable {
     let code: String

@@ -173,6 +173,85 @@ actor NTNUScheduleService {
             }
     }
 
+    // MARK: - Studieprogramkatalog (bulk-hentet, cachet lokalt for raskt lokalt søk)
+
+    private var memoryProgramCatalog: [StudyProgramListing]?
+    private lazy var programCatalogCacheURL: URL = {
+        let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+        return (dir ?? FileManager.default.temporaryDirectory).appendingPathComponent("ntnu_studyprogram_catalog.json")
+    }()
+
+    private struct ProgramCatalogCache: Codable {
+        let fetchedAt: Date
+        let programs: [StudyProgramListing]
+    }
+
+    /// Studieprogramlisten endrer seg sjelden, så cachen regnes som fersk i 7 dager.
+    func programCatalog(forceRefresh: Bool = false) async throws -> [StudyProgramListing] {
+        if !forceRefresh, let memoryProgramCatalog { return memoryProgramCatalog }
+        if !forceRefresh, let cached = loadProgramCache(), Date().timeIntervalSince(cached.fetchedAt) < 7 * 24 * 3600 {
+            memoryProgramCatalog = cached.programs
+            return cached.programs
+        }
+
+        var url = URLComponents(string: "https://www.ntnu.no/web/studier/alle")!
+        url.queryItems = [
+            .init(name: "p_p_id", value: "studyprogrammelistportlet_WAR_studyprogrammelistportlet"),
+            .init(name: "p_p_lifecycle", value: "2"),
+            .init(name: "p_p_state", value: "normal"),
+            .init(name: "p_p_mode", value: "view"),
+            .init(name: "p_p_resource_id", value: "allStudies"),
+        ]
+        var request = URLRequest(url: url.url!)
+        request.setValue("XMLHttpRequest", forHTTPHeaderField: "X-Requested-With")
+
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw ServiceError.badResponse
+        }
+        let decoded = try JSONDecoder().decode(RawStudyProgramSearchResponse.self, from: data)
+        let programs = decoded.docs
+            .map { StudyProgramListing(code: $0.studyprogCode, name: $0.studyprogName, studyLevel: $0.studyprogStudyLevel) }
+            .reduce(into: [String: StudyProgramListing]()) { result, program in result[program.code] = program }
+            .values
+            .sorted { $0.name < $1.name }
+
+        memoryProgramCatalog = programs
+        saveProgramCache(ProgramCatalogCache(fetchedAt: .init(), programs: programs))
+        return programs
+    }
+
+    nonisolated func searchPrograms(_ query: String, in programs: [StudyProgramListing]) -> [StudyProgramListing] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+        let locale = Locale(identifier: "nb_NO")
+        let needle = trimmed.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: locale)
+        return programs.filter {
+            $0.code.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: locale).contains(needle)
+                || $0.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: locale).contains(needle)
+        }
+        .sorted { lhs, rhs in
+            let lhsStarts = lhs.code.lowercased().hasPrefix(needle)
+            let rhsStarts = rhs.code.lowercased().hasPrefix(needle)
+            if lhsStarts != rhsStarts { return lhsStarts }
+            return lhs.name < rhs.name
+        }
+    }
+
+    private func loadProgramCache() -> ProgramCatalogCache? {
+        guard let data = try? Data(contentsOf: programCatalogCacheURL) else { return nil }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try? decoder.decode(ProgramCatalogCache.self, from: data)
+    }
+
+    private func saveProgramCache(_ cache: ProgramCatalogCache) {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        guard let data = try? encoder.encode(cache) else { return }
+        try? data.write(to: programCatalogCacheURL, options: .atomic)
+    }
+
     // MARK: - Studieplan per studieprogram (for bulk-import av emner)
 
     /// Portlet-instansen kan i teorien roteres av NTNU ved omdeploy — verifisert manuelt 2026-08.
@@ -379,4 +458,14 @@ private struct RawStudyPlanCourse: Decodable {
 
 private struct RawStudyChoice: Decodable {
     let code: String?
+}
+
+private struct RawStudyProgramSearchResponse: Decodable {
+    let docs: [RawStudyProgramDoc]
+}
+
+private struct RawStudyProgramDoc: Decodable {
+    let studyprogCode: String
+    let studyprogName: String
+    let studyprogStudyLevel: String
 }
