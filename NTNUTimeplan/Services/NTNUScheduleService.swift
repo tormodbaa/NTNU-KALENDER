@@ -173,6 +173,100 @@ actor NTNUScheduleService {
             }
     }
 
+    // MARK: - Studieplan per studieprogram (for bulk-import av emner)
+
+    /// Portlet-instansen kan i teorien roteres av NTNU ved omdeploy — verifisert manuelt 2026-08.
+    private static let studyPlanBaseURL = "https://www.ntnu.no/web/studier/studieplan"
+    private static let studyPlanPortletID = "studyprogrammeplannerportlet_WAR_studyprogrammeplannerportlet_INSTANCE_KzJMPh2hQuXL"
+
+    enum StudyPlanError: Error, LocalizedError {
+        case notFound(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .notFound(let message): message
+            }
+        }
+    }
+
+    func fetchStudyPlanYears(programCode: String) async throws -> [Int] {
+        var url = URLComponents(string: Self.studyPlanBaseURL)!
+        url.queryItems = [
+            .init(name: "p_p_id", value: Self.studyPlanPortletID),
+            .init(name: "p_p_lifecycle", value: "2"),
+            .init(name: "p_p_state", value: "normal"),
+            .init(name: "p_p_mode", value: "view"),
+            .init(name: "p_p_resource_id", value: "yearlist"),
+            .init(name: "code", value: programCode),
+        ]
+        var request = URLRequest(url: url.url!)
+        request.setValue("XMLHttpRequest", forHTTPHeaderField: "X-Requested-With")
+
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw ServiceError.badResponse
+        }
+        let decoded = try JSONDecoder().decode(RawYearListResponse.self, from: data)
+        guard let years = decoded.yearList, !years.isEmpty else {
+            throw StudyPlanError.notFound("Fant ikke studieprogrammet \"\(programCode)\".")
+        }
+        return years.compactMap(Int.init).sorted(by: >)
+    }
+
+    func fetchStudyPlan(programCode: String, year: Int) async throws -> StudyPlan {
+        var url = URLComponents(string: Self.studyPlanBaseURL)!
+        url.queryItems = [
+            .init(name: "p_p_id", value: Self.studyPlanPortletID),
+            .init(name: "p_p_lifecycle", value: "2"),
+            .init(name: "p_p_state", value: "normal"),
+            .init(name: "p_p_mode", value: "view"),
+            .init(name: "p_p_resource_id", value: "studyplan"),
+            .init(name: "code", value: programCode),
+            .init(name: "year", value: "\(year)"),
+        ]
+        var request = URLRequest(url: url.url!)
+        request.setValue("XMLHttpRequest", forHTTPHeaderField: "X-Requested-With")
+
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw ServiceError.badResponse
+        }
+        let decoded = try JSONDecoder().decode(RawStudyPlanResponse.self, from: data)
+        guard let raw = decoded.studyplan else {
+            throw StudyPlanError.notFound(decoded.error ?? "Fant ikke studieplan for \"\(programCode)\" \(year).")
+        }
+
+        let periods: [StudyPlanPeriod] = raw.studyPeriods.compactMap { period in
+            guard let periodNumber = Int(period.periodNumber) else { return nil }
+            var groups: [StudyPlanGroup] = []
+
+            for group in period.direction?.courseGroups ?? [] {
+                let courses = group.courses.map {
+                    StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O")
+                }
+                guard !courses.isEmpty else { continue }
+                groups.append(StudyPlanGroup(label: group.name ?? "Emner", courses: courses))
+            }
+
+            for waypoint in period.direction?.studyWaypoints ?? [] {
+                for direction in waypoint.studyDirections ?? [] {
+                    let courses = (direction.courseGroups ?? []).flatMap { group in
+                        group.courses.map {
+                            StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O")
+                        }
+                    }
+                    guard !courses.isEmpty else { continue }
+                    groups.append(StudyPlanGroup(label: "Studieretning: \(direction.name ?? direction.code ?? "")", courses: courses))
+                }
+            }
+
+            guard !groups.isEmpty else { return nil }
+            return StudyPlanPeriod(periodNumber: periodNumber, groups: groups)
+        }
+
+        return StudyPlan(code: raw.code, name: raw.name, year: raw.year, periods: periods.sorted { $0.periodNumber < $1.periodNumber })
+    }
+
     // MARK: - Disk-cache
 
     private func loadCache() -> CatalogCache? {
@@ -234,4 +328,55 @@ private struct RawRoom: Decodable {
     let building: String?
     let room: String?
     let url: String?
+}
+
+private struct RawYearListResponse: Decodable {
+    let yearList: [String]?
+}
+
+private struct RawStudyPlanResponse: Decodable {
+    let studyplan: RawStudyPlan?
+    let error: String?
+}
+
+private struct RawStudyPlan: Decodable {
+    let code: String
+    let name: String
+    let year: Int
+    let studyPeriods: [RawStudyPeriod]
+}
+
+private struct RawStudyPeriod: Decodable {
+    let periodNumber: String
+    let direction: RawDirection?
+}
+
+private struct RawDirection: Decodable {
+    let courseGroups: [RawCourseGroup]?
+    let studyWaypoints: [RawWaypoint]?
+}
+
+private struct RawWaypoint: Decodable {
+    let studyDirections: [RawStudyDirection]?
+}
+
+private struct RawStudyDirection: Decodable {
+    let code: String?
+    let name: String?
+    let courseGroups: [RawCourseGroup]?
+}
+
+private struct RawCourseGroup: Decodable {
+    let name: String?
+    let courses: [RawStudyPlanCourse]
+}
+
+private struct RawStudyPlanCourse: Decodable {
+    let code: String
+    let name: String
+    let studyChoice: RawStudyChoice?
+}
+
+private struct RawStudyChoice: Decodable {
+    let code: String?
 }

@@ -25,7 +25,7 @@ enum ICSExporter {
                 "DTSTAMP:\(formatter.string(from: .init()))",
                 "DTSTART:\(formatter.string(from: event.start))",
                 "DTEND:\(formatter.string(from: event.end))",
-                "SUMMARY:\(escape("\(event.courseCode) – \(event.title)"))",
+                "SUMMARY:\(escape("\(event.courseCode) \(courseName) – \(event.title)"))",
                 "DESCRIPTION:\(escape(courseName))",
                 "LOCATION:\(escape(event.rooms.map(\.displayName).joined(separator: ", ")))",
                 "END:VEVENT",

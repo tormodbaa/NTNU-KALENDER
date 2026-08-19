@@ -2,12 +2,13 @@ import SwiftUI
 
 struct CourseSearchView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
+    @State private var showingStudyProgramImport = false
 
     var body: some View {
         NavigationStack {
             List {
                 if !viewModel.selectedCourses.isEmpty {
-                    Section("Mine emner") {
+                    Section {
                         ForEach(viewModel.selectedCourses) { course in
                             HStack {
                                 Circle().fill(course.color.color).frame(width: 12, height: 12)
@@ -22,6 +23,18 @@ struct CourseSearchView: View {
                                 viewModel.removeCourse(viewModel.selectedCourses[index].code)
                             }
                         }
+                    } header: {
+                        Text("Mine emner")
+                    } footer: {
+                        Text("Sveip til venstre for å fjerne et emne.")
+                    }
+                }
+
+                Section {
+                    Button {
+                        showingStudyProgramImport = true
+                    } label: {
+                        Label("Legg til hele studieretningen din", systemImage: "graduationcap")
                     }
                 }
 
@@ -50,6 +63,9 @@ struct CourseSearchView: View {
             .searchable(text: $viewModel.searchQuery, prompt: "Emnekode eller emnenavn")
             .navigationTitle("Emner")
             .task { await viewModel.loadCatalogIfNeeded() }
+            .sheet(isPresented: $showingStudyProgramImport) {
+                StudyProgramImportView().environmentObject(viewModel)
+            }
         }
     }
 }

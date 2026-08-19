@@ -44,7 +44,8 @@ final class EventKitExporter {
         for event in events {
             let ekEvent = EKEvent(eventStore: store)
             ekEvent.calendar = calendar
-            ekEvent.title = "\(event.courseCode) – \(event.title)"
+            let courseName = nameByCode[event.courseCode] ?? ""
+            ekEvent.title = "\(event.courseCode) \(courseName) – \(event.title)"
             ekEvent.startDate = event.start
             ekEvent.endDate = event.end
             ekEvent.location = event.rooms.map(\.displayName).joined(separator: ", ")

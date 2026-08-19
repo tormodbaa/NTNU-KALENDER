@@ -9,6 +9,8 @@ struct ScheduleView: View {
     @State private var showingExportSheet = false
     @State private var icsURL: URL?
     @State private var exportAlert: ExportAlert?
+    @State private var showingTimeplanManager = false
+    @State private var showingSettings = false
 
     enum Mode: String, CaseIterable { case week = "Uke", day = "Dag" }
 
@@ -59,10 +61,17 @@ struct ScheduleView: View {
                     }
                 }
             }
-            .navigationTitle("Timeplan")
+            .navigationTitle(viewModel.activeTimeplan.name)
             .toolbar {
-                if !viewModel.selectedCourses.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingTimeplanManager = true
+                    } label: {
+                        Label("Kalendere", systemImage: "calendar.badge.clock")
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    if !viewModel.selectedCourses.isEmpty {
                         Menu {
                             Button("Del som .ics", systemImage: "square.and.arrow.up") { exportICS() }
                             Button("Legg i Apple Kalender", systemImage: "calendar.badge.plus") {
@@ -71,6 +80,11 @@ struct ScheduleView: View {
                         } label: {
                             Image(systemName: "square.and.arrow.up")
                         }
+                    }
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
                     }
                 }
             }
@@ -82,6 +96,12 @@ struct ScheduleView: View {
                 if let icsURL {
                     ShareSheet(items: [icsURL])
                 }
+            }
+            .sheet(isPresented: $showingTimeplanManager) {
+                TimeplanManagerView().environmentObject(viewModel)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView().environmentObject(viewModel)
             }
             .alert(item: $exportAlert) { alert in
                 switch alert.kind {

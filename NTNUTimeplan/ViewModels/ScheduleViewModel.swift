@@ -3,7 +3,8 @@ import SwiftUI
 
 @MainActor
 final class ScheduleViewModel: ObservableObject {
-    @Published private(set) var selectedCourses: [SelectedCourse] = []
+    @Published private(set) var timeplaner: [Timeplan] = []
+    @Published private(set) var activeTimeplanID: Timeplan.ID
     @Published private(set) var events: [ScheduleEvent] = []
     @Published private(set) var conflictingEventIDs: Set<String> = []
 
@@ -15,12 +16,35 @@ final class ScheduleViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published private(set) var usingDemoData = false
 
+    @Published var notificationsEnabled = false {
+        didSet { UserDefaults.standard.set(notificationsEnabled, forKey: Self.notificationsEnabledKey) }
+    }
+    @Published var notificationLeadMinutes = 15 {
+        didSet { UserDefaults.standard.set(notificationLeadMinutes, forKey: Self.notificationLeadKey) }
+    }
+
     private let service = NTNUScheduleService.shared
     private var catalog: [CourseListing] = []
-    private static let storageKey = "ntnu.timeplan.selectedCourses"
+    private var eventsCache: [Timeplan.ID: [ScheduleEvent]] = [:]
+
+    private static let timeplanerKey = "ntnu.timeplan.timeplaner.v2"
+    private static let activeIDKey = "ntnu.timeplan.activeID.v2"
+    private static let notificationsEnabledKey = "ntnu.timeplan.notificationsEnabled"
+    private static let notificationLeadKey = "ntnu.timeplan.notificationLeadMinutes"
+
+    var activeTimeplan: Timeplan {
+        timeplaner.first(where: { $0.id == activeTimeplanID }) ?? timeplaner[0]
+    }
+
+    var selectedCourses: [SelectedCourse] { activeTimeplan.courses }
 
     init() {
-        selectedCourses = Self.loadPersistedCourses()
+        let loaded = Self.loadPersistedTimeplaner()
+        timeplaner = loaded.timeplaner
+        activeTimeplanID = loaded.activeID
+        notificationsEnabled = UserDefaults.standard.bool(forKey: Self.notificationsEnabledKey)
+        let storedLead = UserDefaults.standard.integer(forKey: Self.notificationLeadKey)
+        notificationLeadMinutes = storedLead == 0 ? 15 : storedLead
     }
 
     // MARK: - Katalog og søk
@@ -44,36 +68,142 @@ final class ScheduleViewModel: ObservableObject {
         searchResults = service.search(searchQuery, in: catalog)
     }
 
-    // MARK: - Valgte emner
+    // MARK: - Kalendere (Timeplaner)
+
+    func selectTimeplan(_ id: Timeplan.ID) {
+        guard id != activeTimeplanID, timeplaner.contains(where: { $0.id == id }) else { return }
+        activeTimeplanID = id
+        persistTimeplaner()
+        if let cached = eventsCache[id] {
+            events = cached
+            usingDemoData = false
+            recomputeConflicts()
+        } else {
+            events = []
+            Task { await refreshAllEvents() }
+        }
+    }
+
+    func createTimeplan(name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newPlan = Timeplan(name: trimmed.isEmpty ? "Ny kalender" : trimmed)
+        timeplaner.append(newPlan)
+        activeTimeplanID = newPlan.id
+        events = []
+        persistTimeplaner()
+    }
+
+    func renameTimeplan(_ id: Timeplan.ID, to name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, let index = timeplaner.firstIndex(where: { $0.id == id }) else { return }
+        timeplaner[index].name = trimmed
+        persistTimeplaner()
+    }
+
+    func deleteTimeplan(_ id: Timeplan.ID) {
+        guard timeplaner.count > 1 else { return }
+        timeplaner.removeAll { $0.id == id }
+        eventsCache[id] = nil
+        if activeTimeplanID == id {
+            activeTimeplanID = timeplaner[0].id
+            events = eventsCache[activeTimeplanID] ?? []
+            if events.isEmpty { Task { await refreshAllEvents() } }
+        }
+        persistTimeplaner()
+    }
+
+    // MARK: - Valgte emner (i aktiv kalender)
 
     var isSelected: (String) -> Bool {
         { [selectedCourses] code in selectedCourses.contains { $0.code == code } }
     }
 
     func addCourse(_ listing: CourseListing) {
-        guard !selectedCourses.contains(where: { $0.code == listing.code }) else { return }
-        let usedColors = Set(selectedCourses.map(\.color))
+        guard let index = timeplaner.firstIndex(where: { $0.id == activeTimeplanID }) else { return }
+        guard !timeplaner[index].courses.contains(where: { $0.code == listing.code }) else { return }
+        let usedColors = Set(timeplaner[index].courses.map(\.color))
         let course = SelectedCourse(code: listing.code, name: listing.name, color: .next(excluding: usedColors))
-        selectedCourses.append(course)
-        persistSelectedCourses()
+        timeplaner[index].courses.append(course)
+        persistTimeplaner()
         Task { await fetchEvents(for: course) }
     }
 
+    /// Legger til flere emner samlet (f.eks. fra en studieretning) og henter timeplandata for alle i ett steg.
+    func addCourses(_ listings: [CourseListing]) async {
+        guard let index = timeplaner.firstIndex(where: { $0.id == activeTimeplanID }) else { return }
+        var usedColors = Set(timeplaner[index].courses.map(\.color))
+        var added: [SelectedCourse] = []
+        for listing in listings where !timeplaner[index].courses.contains(where: { $0.code == listing.code }) {
+            let color = CourseColor.next(excluding: usedColors)
+            usedColors.insert(color)
+            let course = SelectedCourse(code: listing.code, name: listing.name, color: color)
+            timeplaner[index].courses.append(course)
+            added.append(course)
+        }
+        guard !added.isEmpty else { return }
+        persistTimeplaner()
+        await refreshAllEvents()
+    }
+
+    // MARK: - Studieretning-import
+
+    func fetchStudyPlanYears(programCode: String) async throws -> [Int] {
+        try await service.fetchStudyPlanYears(programCode: programCode)
+    }
+
+    func fetchStudyPlan(programCode: String, year: Int) async throws -> StudyPlan {
+        try await service.fetchStudyPlan(programCode: programCode, year: year)
+    }
+
+    /// Legger til emner fra en hentet studieplan (se `StudyProgramImportView`).
+    func addStudyPlanCourses(_ courses: [StudyPlanCourse]) async {
+        guard let index = timeplaner.firstIndex(where: { $0.id == activeTimeplanID }) else { return }
+        var usedColors = Set(timeplaner[index].courses.map(\.color))
+        var addedAny = false
+        for course in courses where !timeplaner[index].courses.contains(where: { $0.code == course.code }) {
+            let color = CourseColor.next(excluding: usedColors)
+            usedColors.insert(color)
+            timeplaner[index].courses.append(SelectedCourse(code: course.code, name: course.name, color: color))
+            addedAny = true
+        }
+        guard addedAny else { return }
+        persistTimeplaner()
+        await refreshAllEvents()
+    }
+
     func removeCourse(_ code: String) {
-        selectedCourses.removeAll { $0.code == code }
+        guard let index = timeplaner.firstIndex(where: { $0.id == activeTimeplanID }) else { return }
+        timeplaner[index].courses.removeAll { $0.code == code }
         events.removeAll { $0.courseCode == code }
-        persistSelectedCourses()
+        eventsCache[activeTimeplanID] = events
+        persistTimeplaner()
         recomputeConflicts()
+        Task { await rescheduleNotificationsIfNeeded() }
+    }
+
+    func removeAllCourses() {
+        guard let index = timeplaner.firstIndex(where: { $0.id == activeTimeplanID }) else { return }
+        timeplaner[index].courses.removeAll()
+        events.removeAll()
+        eventsCache[activeTimeplanID] = []
+        persistTimeplaner()
+        recomputeConflicts()
+        Task { await rescheduleNotificationsIfNeeded() }
     }
 
     func refreshAllEvents() async {
-        guard !selectedCourses.isEmpty else { return }
+        let courses = selectedCourses
+        guard !courses.isEmpty else {
+            events = []
+            eventsCache[activeTimeplanID] = []
+            return
+        }
         isLoadingEvents = true
         defer { isLoadingEvents = false }
         events = []
         usingDemoData = false
         var anyFailed = false
-        for course in selectedCourses {
+        for course in courses {
             do {
                 let fetched = try await service.fetchEvents(for: course)
                 events.append(contentsOf: fetched)
@@ -88,7 +218,9 @@ final class ScheduleViewModel: ObservableObject {
         } else {
             errorMessage = nil
         }
+        eventsCache[activeTimeplanID] = events
         recomputeConflicts()
+        await rescheduleNotificationsIfNeeded()
     }
 
     private func fetchEvents(for course: SelectedCourse) async {
@@ -97,10 +229,39 @@ final class ScheduleViewModel: ObservableObject {
         do {
             let fetched = try await service.fetchEvents(for: course)
             events.append(contentsOf: fetched)
+            eventsCache[activeTimeplanID] = events
             recomputeConflicts()
+            await rescheduleNotificationsIfNeeded()
         } catch {
             errorMessage = "Klarte ikke å hente timeplan for \(course.code)."
         }
+    }
+
+    // MARK: - Varslinger
+
+    func setNotificationsEnabled(_ enabled: Bool) async {
+        if enabled {
+            let granted = await NotificationScheduler.requestAuthorization()
+            notificationsEnabled = granted
+            if granted {
+                await rescheduleNotificationsIfNeeded()
+            } else {
+                errorMessage = "Fikk ikke tilgang til varsler. Gi tilgang i Innstillinger."
+            }
+        } else {
+            notificationsEnabled = false
+            NotificationScheduler.cancelAll()
+        }
+    }
+
+    func updateNotificationLeadMinutes(_ minutes: Int) async {
+        notificationLeadMinutes = minutes
+        await rescheduleNotificationsIfNeeded()
+    }
+
+    private func rescheduleNotificationsIfNeeded() async {
+        guard notificationsEnabled else { return }
+        await NotificationScheduler.reschedule(events: events, courses: selectedCourses, leadMinutes: notificationLeadMinutes)
     }
 
     // MARK: - Kollisjonsdeteksjon
@@ -127,15 +288,22 @@ final class ScheduleViewModel: ObservableObject {
 
     // MARK: - Persistens
 
-    private func persistSelectedCourses() {
-        guard let data = try? JSONEncoder().encode(selectedCourses) else { return }
-        UserDefaults.standard.set(data, forKey: Self.storageKey)
+    private func persistTimeplaner() {
+        guard let data = try? JSONEncoder().encode(timeplaner) else { return }
+        UserDefaults.standard.set(data, forKey: Self.timeplanerKey)
+        UserDefaults.standard.set(activeTimeplanID.uuidString, forKey: Self.activeIDKey)
     }
 
-    private static func loadPersistedCourses() -> [SelectedCourse] {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let decoded = try? JSONDecoder().decode([SelectedCourse].self, from: data)
-        else { return [] }
-        return decoded
+    private static func loadPersistedTimeplaner() -> (timeplaner: [Timeplan], activeID: Timeplan.ID) {
+        guard let data = UserDefaults.standard.data(forKey: timeplanerKey),
+              let decoded = try? JSONDecoder().decode([Timeplan].self, from: data),
+              !decoded.isEmpty
+        else {
+            let initial = Timeplan(name: "Min timeplan")
+            return ([initial], initial.id)
+        }
+        let activeID = UserDefaults.standard.string(forKey: activeIDKey).flatMap(UUID.init)
+        let resolvedID = decoded.first(where: { $0.id == activeID })?.id ?? decoded[0].id
+        return (decoded, resolvedID)
     }
 }
