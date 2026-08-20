@@ -22,6 +22,12 @@ final class ScheduleViewModel: ObservableObject {
     @Published var notificationLeadMinutes = 15 {
         didSet { UserDefaults.standard.set(notificationLeadMinutes, forKey: Self.notificationLeadKey) }
     }
+    /// Emner brukeren har skrudd AV varsler for (opt-out — nye emner varsles som
+    /// standard, uten at brukeren må huske å skru dem på hver gang).
+    @Published private(set) var mutedCourseCodes: Set<String> = []
+    /// Hendelsestyper (forelesning/øving/lab/…) brukeren har skrudd av varsler for,
+    /// f.eks. slik at man kan velge å bare varsles om forelesninger, ikke mattelab.
+    @Published private(set) var mutedEventKinds: Set<EventKind> = []
 
     /// Emner med mange studieprogram registrerer ofte flere parallelle grupper (ulikt
     /// rom/tidspunkt) som separate aktiviteter i NTNUs data. Uten å vite hvilket
@@ -38,6 +44,8 @@ final class ScheduleViewModel: ObservableObject {
     private static let notificationsEnabledKey = "ntnu.timeplan.notificationsEnabled"
     private static let notificationLeadKey = "ntnu.timeplan.notificationLeadMinutes"
     private static let myStudyProgramKey = "ntnu.timeplan.myStudyProgram"
+    private static let mutedCourseCodesKey = "ntnu.timeplan.mutedCourseCodes"
+    private static let mutedEventKindsKey = "ntnu.timeplan.mutedEventKinds"
 
     private var myStudyProgramCode: String? { myStudyProgram?.code }
 
@@ -56,6 +64,13 @@ final class ScheduleViewModel: ObservableObject {
         notificationLeadMinutes = storedLead == 0 ? 15 : storedLead
         if let data = UserDefaults.standard.data(forKey: Self.myStudyProgramKey) {
             myStudyProgram = try? JSONDecoder().decode(StudyProgramListing.self, from: data)
+        }
+        if let codes = UserDefaults.standard.array(forKey: Self.mutedCourseCodesKey) as? [String] {
+            mutedCourseCodes = Set(codes)
+        }
+        if let kindsData = UserDefaults.standard.data(forKey: Self.mutedEventKindsKey),
+           let kinds = try? JSONDecoder().decode([EventKind].self, from: kindsData) {
+            mutedEventKinds = Set(kinds)
         }
     }
 
@@ -291,9 +306,37 @@ final class ScheduleViewModel: ObservableObject {
         await rescheduleNotificationsIfNeeded()
     }
 
+    func setCourseMuted(_ code: String, muted: Bool) async {
+        if muted {
+            mutedCourseCodes.insert(code)
+        } else {
+            mutedCourseCodes.remove(code)
+        }
+        UserDefaults.standard.set(Array(mutedCourseCodes), forKey: Self.mutedCourseCodesKey)
+        await rescheduleNotificationsIfNeeded()
+    }
+
+    func setKindMuted(_ kind: EventKind, muted: Bool) async {
+        if muted {
+            mutedEventKinds.insert(kind)
+        } else {
+            mutedEventKinds.remove(kind)
+        }
+        if let data = try? JSONEncoder().encode(mutedEventKinds) {
+            UserDefaults.standard.set(data, forKey: Self.mutedEventKindsKey)
+        }
+        await rescheduleNotificationsIfNeeded()
+    }
+
     private func rescheduleNotificationsIfNeeded() async {
         guard notificationsEnabled else { return }
-        await NotificationScheduler.reschedule(events: events, courses: selectedCourses, leadMinutes: notificationLeadMinutes)
+        await NotificationScheduler.reschedule(
+            events: events,
+            courses: selectedCourses,
+            leadMinutes: notificationLeadMinutes,
+            mutedCourseCodes: mutedCourseCodes,
+            mutedKinds: mutedEventKinds
+        )
     }
 
     // MARK: - Kollisjonsdeteksjon

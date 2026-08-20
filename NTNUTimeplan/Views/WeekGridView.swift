@@ -53,6 +53,10 @@ struct WeekGridView: View {
                                     )
                                     .onTapGesture { onTap(item.event) }
                                 }
+
+                                if Calendar.ntnu.isDateInToday(day) {
+                                    CurrentTimeIndicator(metrics: metrics)
+                                }
                             }
                         }
                         .frame(height: metrics.totalHeight)

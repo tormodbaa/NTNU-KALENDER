@@ -16,7 +16,13 @@ enum NotificationScheduler {
         await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
     }
 
-    static func reschedule(events: [ScheduleEvent], courses: [SelectedCourse], leadMinutes: Int) async {
+    static func reschedule(
+        events: [ScheduleEvent],
+        courses: [SelectedCourse],
+        leadMinutes: Int,
+        mutedCourseCodes: Set<String>,
+        mutedKinds: Set<EventKind>
+    ) async {
         let center = UNUserNotificationCenter.current()
         let pending = await center.pendingNotificationRequests()
         let ourIDs = pending.map(\.identifier).filter { $0.hasPrefix(idPrefix) }
@@ -25,7 +31,11 @@ enum NotificationScheduler {
         let nameByCode = Dictionary(uniqueKeysWithValues: courses.map { ($0.code, $0.name) })
         let now = Date()
 
-        for event in events {
+        let relevantEvents = events.filter {
+            !mutedCourseCodes.contains($0.courseCode) && !mutedKinds.contains($0.kind) && !$0.isExtendedSession
+        }
+
+        for event in relevantEvents {
             guard let fireDate = Calendar.current.date(byAdding: .minute, value: -leadMinutes, to: event.start),
                   fireDate > now
             else { continue }

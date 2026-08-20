@@ -6,12 +6,20 @@ struct SettingsView: View {
 
     @State private var showingClearConfirmation = false
     @State private var showingProgramPicker = false
+    @State private var calendarName = ""
 
-    private static let leadOptions = [5, 10, 15, 30, 60]
+    /// I minutter. Vist med naturlige norske etiketter i `leadLabel(_:)`.
+    private static let leadOptions = [5, 10, 15, 30, 45, 60, 90, 120]
 
     var body: some View {
         NavigationStack {
             Form {
+                Section("Kalender") {
+                    TextField("Navn på kalenderen", text: $calendarName)
+                        .onSubmit(renameActiveTimeplan)
+                        .onChange(of: calendarName) { _, _ in renameActiveTimeplan() }
+                }
+
                 Section {
                     Button {
                         showingProgramPicker = true
@@ -36,18 +44,44 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Toggle("Varsle før forelesning", isOn: notificationsBinding)
+                    Toggle("Varsle før timer", isOn: notificationsBinding)
                     if viewModel.notificationsEnabled {
                         Picker("Varsle før", selection: leadMinutesBinding) {
                             ForEach(Self.leadOptions, id: \.self) { minutes in
-                                Text("\(minutes) minutter").tag(minutes)
+                                Text(Self.leadLabel(minutes)).tag(minutes)
                             }
                         }
                     }
                 } header: {
                     Text("Varslinger")
                 } footer: {
-                    Text("Du får et push-varsel på telefonen et gitt antall minutter før hver time i valgte emner.")
+                    Text("Du får et push-varsel på telefonen et gitt antall tid før hver time i valgte emner.")
+                }
+
+                if viewModel.notificationsEnabled {
+                    Section {
+                        ForEach(EventKind.allCases, id: \.self) { kind in
+                            Toggle(kind.shortLabel, isOn: kindBinding(kind))
+                        }
+                    } header: {
+                        Text("Varsle for disse timetypene")
+                    } footer: {
+                        Text("Skru av f.eks. \"Lab/øving\" hvis du bare vil ha varsel før forelesninger.")
+                    }
+
+                    if !viewModel.selectedCourses.isEmpty {
+                        Section("Varsle for disse emnene") {
+                            ForEach(viewModel.selectedCourses) { course in
+                                Toggle(isOn: courseBinding(course.code)) {
+                                    HStack {
+                                        Circle().fill(course.color.color).frame(width: 10, height: 10)
+                                        Text("\(course.code) – \(course.name)")
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Section {
@@ -66,6 +100,7 @@ struct SettingsView: View {
                     Button("Ferdig") { dismiss() }
                 }
             }
+            .onAppear { calendarName = viewModel.activeTimeplan.name }
             .confirmationDialog(
                 "Fjerne alle emner i \"\(viewModel.activeTimeplan.name)\"?",
                 isPresented: $showingClearConfirmation,
@@ -93,6 +128,12 @@ struct SettingsView: View {
         }
     }
 
+    private func renameActiveTimeplan() {
+        let trimmed = calendarName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        viewModel.renameTimeplan(viewModel.activeTimeplanID, to: trimmed)
+    }
+
     private var notificationsBinding: Binding<Bool> {
         Binding(
             get: { viewModel.notificationsEnabled },
@@ -105,5 +146,30 @@ struct SettingsView: View {
             get: { viewModel.notificationLeadMinutes },
             set: { newValue in Task { await viewModel.updateNotificationLeadMinutes(newValue) } }
         )
+    }
+
+    private func courseBinding(_ code: String) -> Binding<Bool> {
+        Binding(
+            get: { !viewModel.mutedCourseCodes.contains(code) },
+            set: { newValue in Task { await viewModel.setCourseMuted(code, muted: !newValue) } }
+        )
+    }
+
+    private func kindBinding(_ kind: EventKind) -> Binding<Bool> {
+        Binding(
+            get: { !viewModel.mutedEventKinds.contains(kind) },
+            set: { newValue in Task { await viewModel.setKindMuted(kind, muted: !newValue) } }
+        )
+    }
+
+    private static func leadLabel(_ minutes: Int) -> String {
+        if minutes % 60 == 0 {
+            let hours = minutes / 60
+            return hours == 1 ? "1 time før" : "\(hours) timer før"
+        }
+        if minutes == 90 {
+            return "1,5 time før"
+        }
+        return "\(minutes) minutter før"
     }
 }
