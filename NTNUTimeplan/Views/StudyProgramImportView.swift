@@ -45,6 +45,7 @@ private struct StudyProgramPlanPicker: View {
     @State private var selectedStudyYear: Int?
     @State private var selectedCourseCodes: Set<String> = []
     @State private var isLoading = false
+    @State private var isAddingCourses = false
     @State private var errorMessage: String?
 
     /// NTNU nummererer perioder 1–10 (semester 1–10). "Studieår" 1 = periode 1–2, osv.
@@ -124,12 +125,13 @@ private struct StudyProgramPlanPicker: View {
                 Button("Legg til (\(selectedCourseCodes.count))") {
                     Task { await addSelected() }
                 }
-                .disabled(selectedCourseCodes.isEmpty)
+                .disabled(selectedCourseCodes.isEmpty || isLoading)
             }
         }
+        .disabled(isLoading)
         .overlay {
             if isLoading {
-                ProgressView()
+                LoadingOverlay(text: isAddingCourses ? "Legger til emner …" : "Henter studieplan …")
             }
         }
         .task { await loadYears() }
@@ -216,12 +218,42 @@ private struct StudyProgramPlanPicker: View {
             .filter { selectedCourseCodes.contains($0.code) }
         var seen = Set<String>()
         let deduplicated = courses.filter { seen.insert($0.code).inserted }
+
+        isAddingCourses = true
+        isLoading = true
+        defer {
+            isAddingCourses = false
+            isLoading = false
+        }
+
         await viewModel.addStudyPlanCourses(deduplicated)
         // Setter dette som "mitt studieprogram" med det samme, slik at parallellgrupper
         // i emner utenfor dette programmet filtreres bort automatisk (se ScheduleViewModel).
         // Denne kjører sist siden den selv trigger en ny henting av alle emner.
         await viewModel.setMyStudyProgram(program)
         dismiss()
+    }
+}
+
+/// Fyller hele skjermen med en dempet bakgrunn + spinner og tekst, slik at et lengre
+/// nettverkskall (f.eks. henting av timeplandata for mange emner samtidig) tydelig
+/// ser ut som at noe skjer, i stedet for at appen ser ut til å ha hengt seg.
+private struct LoadingOverlay: View {
+    let text: String
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground).opacity(0.75)
+            VStack(spacing: 12) {
+                ProgressView()
+                Text(text)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(20)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+        }
+        .ignoresSafeArea()
     }
 }
 
