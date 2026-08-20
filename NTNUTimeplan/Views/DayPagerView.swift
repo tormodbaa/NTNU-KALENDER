@@ -42,8 +42,17 @@ struct DayPagerView: View {
             selectedDay = days.first { Calendar.ntnu.isDate($0, inSameDayAs: anchorDate) } ?? (days.first ?? anchorDate)
         }
         .onChange(of: anchorDate) { _, newValue in
-            if let match = days.first(where: { Calendar.ntnu.isDate($0, inSameDayAs: newValue) }) {
+            if let match = days.first(where: { Calendar.ntnu.isDate($0, inSameDayAs: newValue) }),
+               !Calendar.ntnu.isDate(selectedDay, inSameDayAs: match) {
                 selectedDay = match
+            }
+        }
+        .onChange(of: selectedDay) { _, newValue in
+            // Hold `anchorDate` i sync når brukeren sveiper med fingeren (ikke bare
+            // når pilene i headeren trykkes), slik at "Gå til i dag" og ukenummeret
+            // over alltid stemmer med siden som faktisk vises.
+            if !Calendar.ntnu.isDate(anchorDate, inSameDayAs: newValue) {
+                anchorDate = newValue
             }
         }
     }

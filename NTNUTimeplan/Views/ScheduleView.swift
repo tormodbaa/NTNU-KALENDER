@@ -126,19 +126,40 @@ struct ScheduleView: View {
 
     private var weekNavigationHeader: some View {
         HStack {
-            Button { anchorDate = anchorDate.addingDays(-7) } label: {
+            Button { step(-1) } label: {
                 Image(systemName: "chevron.left")
             }
             Spacer()
-            Text("Uke \(anchorDate.weekOfYear) · \(weekDays.first?.formatted("d.M") ?? "") – \(weekDays.last?.formatted("d.M") ?? "")")
-                .font(.subheadline.weight(.semibold))
+            VStack(spacing: 1) {
+                Text("Uke \(anchorDate.weekOfYear) · \(weekDays.first?.formatted("d.M") ?? "") – \(weekDays.last?.formatted("d.M") ?? "")")
+                    .font(.subheadline.weight(.semibold))
+                if !Calendar.ntnu.isDateInToday(anchorDate) {
+                    Button("Gå til i dag") { anchorDate = Date() }
+                        .font(.caption2)
+                }
+            }
             Spacer()
-            Button { anchorDate = anchorDate.addingDays(7) } label: {
+            Button { step(1) } label: {
                 Image(systemName: "chevron.right")
             }
         }
         .padding(.horizontal)
         .padding(.top, 6)
+    }
+
+    /// I ukevisning hopper pilene en hel uke; i dagvisning skal de bla én dag om
+    /// gangen (og hoppe over helg, siden timeplanen bare dekker man.–fre.).
+    private func step(_ direction: Int) {
+        switch mode {
+        case .week:
+            anchorDate = anchorDate.addingDays(7 * direction)
+        case .day:
+            var next = anchorDate.addingDays(direction)
+            while next.isoWeekday > 5 {
+                next = next.addingDays(direction)
+            }
+            anchorDate = next
+        }
     }
 
     private var weekDays: [Date] {
