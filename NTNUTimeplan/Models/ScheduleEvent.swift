@@ -52,4 +52,12 @@ struct ScheduleEvent: Identifiable, Codable, Hashable {
     var studyProgramKeys: [String]
 
     var isValid: Bool { end > start }
+
+    /// NTNU registrerer noen aktiviteter (typisk åpne/selvstendige "Lab"-økter) som
+    /// varer store deler av dagen (8–10 timer) — det er tilgjengelighetsvinduer man kan
+    /// stikke innom, ikke en sammenhengende obligatorisk økt. Slike behandles annerledes
+    /// i kalendervisningen og kollisjonsdeteksjon enn vanlige 45–105 min forelesninger.
+    var isExtendedSession: Bool {
+        end.timeIntervalSince(start) > 4 * 3600
+    }
 }

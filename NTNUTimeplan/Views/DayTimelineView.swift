@@ -11,7 +11,8 @@ struct DayTimelineView: View {
 
     var body: some View {
         let metrics = TimelineMetrics(events: events, hourHeight: hourHeight)
-        let laidOut = DayLayout.layout(events)
+        let extendedEvents = events.filter(\.isExtendedSession)
+        let laidOut = DayLayout.layout(events.filter { !$0.isExtendedSession })
 
         ScrollView {
             HStack(alignment: .top, spacing: 8) {
@@ -21,6 +22,13 @@ struct DayTimelineView: View {
                 GeometryReader { proxy in
                     ZStack(alignment: .topLeading) {
                         HourGridLines(metrics: metrics)
+
+                        ForEach(extendedEvents) { event in
+                            ExtendedSessionBand(event: event, color: colorFor(event.courseCode), style: .detailed)
+                                .frame(height: metrics.clampedHeight(from: event.start, to: event.end))
+                                .offset(y: metrics.yOffset(for: event.start))
+                                .onTapGesture { onTap(event) }
+                        }
 
                         ForEach(laidOut) { item in
                             let width = proxy.size.width / CGFloat(item.columnCount)

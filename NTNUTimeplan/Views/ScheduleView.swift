@@ -36,6 +36,8 @@ struct ScheduleView: View {
 
                     if viewModel.usingDemoData {
                         DemoDataBanner()
+                    } else if viewModel.myStudyProgram == nil && !viewModel.conflictingEventIDs.isEmpty {
+                        MissingProgramBanner { showingSettings = true }
                     }
 
                     Group {
@@ -184,5 +186,29 @@ private struct DemoDataBanner: View {
             .foregroundStyle(.orange)
             .padding(.horizontal)
             .padding(.top, 4)
+    }
+}
+
+private struct MissingProgramBanner: View {
+    let onFix: () -> Void
+
+    var body: some View {
+        Button(action: onFix) {
+            HStack(spacing: 6) {
+                Image(systemName: "person.crop.circle.badge.questionmark")
+                Text("Ser doble timer? Angi studieprogrammet ditt for å vise riktig gruppe")
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption2)
+            }
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.orange)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal)
+        .padding(.top, 6)
     }
 }

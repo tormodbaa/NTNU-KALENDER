@@ -300,7 +300,9 @@ final class ScheduleViewModel: ObservableObject {
 
     private func recomputeConflicts() {
         var conflicts: Set<String> = []
-        let sorted = events.sorted { $0.start < $1.start }
+        // Lange "åpne" økter (se `ScheduleEvent.isExtendedSession`) er tilgjengelighetsvinduer,
+        // ikke sammenhengende obligatorisk tid — de skal ikke telle som kollisjon med noe.
+        let sorted = events.filter { !$0.isExtendedSession }.sorted { $0.start < $1.start }
         for i in sorted.indices {
             for j in (i + 1)..<sorted.indices.upperBound where j != i {
                 let a = sorted[i], b = sorted[j]

@@ -331,9 +331,9 @@ actor NTNUScheduleService {
             var groups: [StudyPlanGroup] = []
 
             for group in period.direction?.courseGroups ?? [] {
-                let courses = group.courses.map {
-                    StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O")
-                }
+                let courses = group.courses
+                    .filter { $0.planelement != true }
+                    .map { StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O") }
                 guard !courses.isEmpty else { continue }
                 groups.append(StudyPlanGroup(label: group.name ?? "Emner", courses: courses))
             }
@@ -341,9 +341,9 @@ actor NTNUScheduleService {
             for waypoint in period.direction?.studyWaypoints ?? [] {
                 for direction in waypoint.studyDirections ?? [] {
                     let courses = (direction.courseGroups ?? []).flatMap { group in
-                        group.courses.map {
-                            StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O")
-                        }
+                        group.courses
+                            .filter { $0.planelement != true }
+                            .map { StudyPlanCourse(code: $0.code, name: $0.name, isObligatory: $0.studyChoice?.code == "O") }
                     }
                     guard !courses.isEmpty else { continue }
                     groups.append(StudyPlanGroup(label: "Studieretning: \(direction.name ?? direction.code ?? "")", courses: courses))
@@ -465,6 +465,9 @@ private struct RawStudyPlanCourse: Decodable {
     let code: String
     let name: String
     let studyChoice: RawStudyChoice?
+    /// `true` for administrative planelementer (f.eks. "Gjennomført krav om
+    /// arbeidslivserfaring") — ikke ekte emner med egen timeplan. Filtreres bort.
+    let planelement: Bool?
 }
 
 private struct RawStudyChoice: Decodable {

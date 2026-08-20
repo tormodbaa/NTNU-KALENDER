@@ -42,16 +42,29 @@ private struct StudyProgramPlanPicker: View {
     @State private var years: [Int] = []
     @State private var selectedYear: Int?
     @State private var plan: StudyPlan?
+    @State private var selectedStudyYear: Int?
     @State private var selectedCourseCodes: Set<String> = []
     @State private var isLoading = false
     @State private var errorMessage: String?
+
+    /// NTNU nummererer perioder 1–10 (semester 1–10). "Studieår" 1 = periode 1–2, osv.
+    private var totalStudyYears: Int {
+        guard let maxPeriod = plan?.periods.map(\.periodNumber).max() else { return 0 }
+        return (maxPeriod + 1) / 2
+    }
+
+    private var periodsInSelectedStudyYear: [StudyPlanPeriod] {
+        guard let plan, let selectedStudyYear else { return [] }
+        let wanted = Set([selectedStudyYear * 2 - 1, selectedStudyYear * 2])
+        return plan.periods.filter { wanted.contains($0.periodNumber) }
+    }
 
     var body: some View {
         Form {
             Section {
                 Button("Bytt studieprogram", systemImage: "arrow.left", action: onChangeProgram)
                 if !years.isEmpty {
-                    Picker("Opptaksår", selection: yearBinding) {
+                    Picker("Kull (opptaksår)", selection: yearBinding) {
                         ForEach(years, id: \.self) { year in
                             Text("\(year)").tag(year)
                         }
@@ -64,29 +77,38 @@ private struct StudyProgramPlanPicker: View {
                 Text("\(program.code) · \(program.studyLevel)")
             }
 
-            if let plan {
-                ForEach(plan.periods) { period in
-                    ForEach(period.groups) { group in
-                        Section {
-                            ForEach(group.courses) { course in
-                                CourseToggleRow(
-                                    course: course,
-                                    isOn: selectedCourseCodes.contains(course.code)
-                                ) { isOn in
-                                    if isOn {
-                                        selectedCourseCodes.insert(course.code)
-                                    } else {
-                                        selectedCourseCodes.remove(course.code)
-                                    }
+            if totalStudyYears > 0 {
+                Section("Hvilket studieår er du i nå?") {
+                    Picker("Studieår", selection: studyYearBinding) {
+                        ForEach(1...totalStudyYears, id: \.self) { year in
+                            Text("\(year). år").tag(year)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
+
+            ForEach(periodsInSelectedStudyYear) { period in
+                ForEach(period.groups) { group in
+                    Section {
+                        ForEach(group.courses) { course in
+                            CourseToggleRow(
+                                course: course,
+                                isOn: selectedCourseCodes.contains(course.code)
+                            ) { isOn in
+                                if isOn {
+                                    selectedCourseCodes.insert(course.code)
+                                } else {
+                                    selectedCourseCodes.remove(course.code)
                                 }
                             }
-                        } header: {
-                            SemesterSectionHeader(
-                                title: "Semester \(period.periodNumber) – \(group.label)",
-                                allSelected: isGroupFullySelected(group),
-                                toggle: { toggleGroup(group) }
-                            )
                         }
+                    } header: {
+                        SemesterSectionHeader(
+                            title: "Semester \(period.periodNumber) – \(group.label)",
+                            allSelected: isGroupFullySelected(group),
+                            toggle: { toggleGroup(group) }
+                        )
                     }
                 }
             }
@@ -123,6 +145,16 @@ private struct StudyProgramPlanPicker: View {
         )
     }
 
+    private var studyYearBinding: Binding<Int> {
+        Binding(
+            get: { selectedStudyYear ?? 1 },
+            set: { newValue in
+                selectedStudyYear = newValue
+                preselectObligatoryCourses()
+            }
+        )
+    }
+
     private func loadYears() async {
         isLoading = true
         errorMessage = nil
@@ -144,17 +176,24 @@ private struct StudyProgramPlanPicker: View {
         do {
             let fetched = try await viewModel.fetchStudyPlan(programCode: program.code, year: year)
             plan = fetched
-            selectedCourseCodes = Set(
-                fetched.periods
-                    .flatMap(\.groups)
-                    .filter { !$0.label.hasPrefix("Studieretning:") }
-                    .flatMap(\.courses)
-                    .filter(\.isObligatory)
-                    .map(\.code)
-            )
+            selectedStudyYear = 1
+            preselectObligatoryCourses()
         } catch {
             errorMessage = "Klarte ikke å hente studieplanen for \(year)."
         }
+    }
+
+    /// Huker automatisk av obligatoriske emner i valgt studieår (ikke valgfrie
+    /// studieretnings-grupper — de må brukeren selv velge blant).
+    private func preselectObligatoryCourses() {
+        selectedCourseCodes = Set(
+            periodsInSelectedStudyYear
+                .flatMap(\.groups)
+                .filter { !$0.label.hasPrefix("Studieretning:") }
+                .flatMap(\.courses)
+                .filter(\.isObligatory)
+                .map(\.code)
+        )
     }
 
     private func isGroupFullySelected(_ group: StudyPlanGroup) -> Bool {
@@ -178,6 +217,10 @@ private struct StudyProgramPlanPicker: View {
         var seen = Set<String>()
         let deduplicated = courses.filter { seen.insert($0.code).inserted }
         await viewModel.addStudyPlanCourses(deduplicated)
+        // Setter dette som "mitt studieprogram" med det samme, slik at parallellgrupper
+        // i emner utenfor dette programmet filtreres bort automatisk (se ScheduleViewModel).
+        // Denne kjører sist siden den selv trigger en ny henting av alle emner.
+        await viewModel.setMyStudyProgram(program)
         dismiss()
     }
 }

@@ -24,11 +24,19 @@ struct WeekGridView: View {
                         DayHeader(day: day)
 
                         let dayEvents = eventsByDay[day] ?? []
-                        let laidOut = DayLayout.layout(dayEvents)
+                        let extendedEvents = dayEvents.filter(\.isExtendedSession)
+                        let laidOut = DayLayout.layout(dayEvents.filter { !$0.isExtendedSession })
 
                         GeometryReader { proxy in
                             ZStack(alignment: .topLeading) {
                                 HourGridLines(metrics: metrics)
+
+                                ForEach(extendedEvents) { event in
+                                    ExtendedSessionBand(event: event, color: colorFor(event.courseCode), style: .compact)
+                                        .frame(height: metrics.clampedHeight(from: event.start, to: event.end))
+                                        .offset(y: metrics.yOffset(for: event.start))
+                                        .onTapGesture { onTap(event) }
+                                }
 
                                 ForEach(laidOut) { item in
                                     let width = proxy.size.width / CGFloat(item.columnCount)
