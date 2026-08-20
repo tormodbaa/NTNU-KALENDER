@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UserNotifications
 
 @MainActor
 final class ScheduleViewModel: ObservableObject {
@@ -22,6 +23,11 @@ final class ScheduleViewModel: ObservableObject {
     @Published var notificationLeadMinutes = 15 {
         didSet { UserDefaults.standard.set(notificationLeadMinutes, forKey: Self.notificationLeadKey) }
     }
+    /// `true` når iOS har blokkert varsler for appen (typisk fordi brukeren svarte nei
+    /// på systemdialogen en gang tidligere — iOS spør bare én gang, så etterpå må
+    /// varsler skrus på manuelt i Innstillinger-appen). Uten dette flagget ser
+    /// varslingsbryteren ut til å ikke gjøre noe når man trykker på den.
+    @Published private(set) var notificationPermissionDenied = false
     /// Emner brukeren har skrudd AV varsler for (opt-out — nye emner varsles som
     /// standard, uten at brukeren må huske å skru dem på hver gang).
     @Published private(set) var mutedCourseCodes: Set<String> = []
@@ -287,17 +293,45 @@ final class ScheduleViewModel: ObservableObject {
     // MARK: - Varslinger
 
     func setNotificationsEnabled(_ enabled: Bool) async {
-        if enabled {
+        guard enabled else {
+            notificationsEnabled = false
+            NotificationScheduler.cancelAll()
+            return
+        }
+
+        // iOS spør kun én gang via systemdialogen. Hvis brukeren allerede har svart
+        // nei (eller appen ble installert på nytt etter et avslag), vil et nytt kall
+        // til requestAuthorization aldri vise dialogen igjen — den svarer bare "denied"
+        // stille. Sjekk status først, slik at vi kan forklare hva som skjer i stedet
+        // for at bryteren bare ser ut til å ikke reagere på trykk.
+        switch await NotificationScheduler.authorizationStatus() {
+        case .denied:
+            notificationsEnabled = false
+            notificationPermissionDenied = true
+            errorMessage = "Varsler er blokkert for appen i iOS. Trykk \"Åpne Innstillinger\" og skru dem på der."
+        case .authorized, .provisional, .ephemeral:
+            notificationsEnabled = true
+            notificationPermissionDenied = false
+            await rescheduleNotificationsIfNeeded()
+        default:
             let granted = await NotificationScheduler.requestAuthorization()
             notificationsEnabled = granted
+            notificationPermissionDenied = !granted
             if granted {
                 await rescheduleNotificationsIfNeeded()
             } else {
-                errorMessage = "Fikk ikke tilgang til varsler. Gi tilgang i Innstillinger."
+                errorMessage = "Fikk ikke tilgang til varsler."
             }
-        } else {
+        }
+    }
+
+    /// Kalles når Innstillinger-visningen åpnes, i tilfelle brukeren har vært innom
+    /// iOS' Innstillinger-app og endret varslingstillatelsen der siden sist.
+    func refreshNotificationPermissionStatus() async {
+        let status = await NotificationScheduler.authorizationStatus()
+        notificationPermissionDenied = status == .denied
+        if status == .denied, notificationsEnabled {
             notificationsEnabled = false
-            NotificationScheduler.cancelAll()
         }
     }
 

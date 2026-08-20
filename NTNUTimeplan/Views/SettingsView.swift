@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
@@ -45,6 +46,15 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Varsle før timer", isOn: notificationsBinding)
+                    if viewModel.notificationPermissionDenied {
+                        Button {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            Label("Åpne Innstillinger", systemImage: "gearshape")
+                        }
+                    }
                     if viewModel.notificationsEnabled {
                         Picker("Varsle før", selection: leadMinutesBinding) {
                             ForEach(Self.leadOptions, id: \.self) { minutes in
@@ -55,12 +65,19 @@ struct SettingsView: View {
                 } header: {
                     Text("Varslinger")
                 } footer: {
-                    Text("Du får et push-varsel på telefonen et gitt antall tid før hver time i valgte emner.")
+                    if viewModel.notificationPermissionDenied {
+                        Text("Varsler er blokkert for appen i iOS. Skru dem på under Varsler i Innstillinger, kom så tilbake hit.")
+                    } else {
+                        Text("Du får et push-varsel på telefonen et gitt antall tid før hver time i valgte emner.")
+                    }
                 }
 
                 if viewModel.notificationsEnabled {
                     Section {
-                        ForEach(EventKind.allCases, id: \.self) { kind in
+                        // Kun typene `classify()` faktisk kan produsere — `.exercise`
+                        // finnes i modellen, men slås alltid sammen med `.lab` ("Lab/øving")
+                        // og ville derfor vært en bryter som aldri gjorde noe.
+                        ForEach([EventKind.lecture, .lab, .seminar, .exam, .other], id: \.self) { kind in
                             Toggle(kind.shortLabel, isOn: kindBinding(kind))
                         }
                     } header: {
@@ -101,6 +118,7 @@ struct SettingsView: View {
                 }
             }
             .onAppear { calendarName = viewModel.activeTimeplan.name }
+            .task { await viewModel.refreshNotificationPermissionStatus() }
             .confirmationDialog(
                 "Fjerne alle emner i \"\(viewModel.activeTimeplan.name)\"?",
                 isPresented: $showingClearConfirmation,
