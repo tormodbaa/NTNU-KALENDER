@@ -67,7 +67,7 @@ private struct StudyProgramPlanPicker: View {
             if let plan {
                 ForEach(plan.periods) { period in
                     ForEach(period.groups) { group in
-                        Section("Semester \(period.periodNumber) – \(group.label)") {
+                        Section {
                             ForEach(group.courses) { course in
                                 CourseToggleRow(
                                     course: course,
@@ -80,6 +80,12 @@ private struct StudyProgramPlanPicker: View {
                                     }
                                 }
                             }
+                        } header: {
+                            SemesterSectionHeader(
+                                title: "Semester \(period.periodNumber) – \(group.label)",
+                                allSelected: isGroupFullySelected(group),
+                                toggle: { toggleGroup(group) }
+                            )
                         }
                     }
                 }
@@ -151,6 +157,18 @@ private struct StudyProgramPlanPicker: View {
         }
     }
 
+    private func isGroupFullySelected(_ group: StudyPlanGroup) -> Bool {
+        !group.courses.isEmpty && group.courses.allSatisfy { selectedCourseCodes.contains($0.code) }
+    }
+
+    private func toggleGroup(_ group: StudyPlanGroup) {
+        if isGroupFullySelected(group) {
+            for course in group.courses { selectedCourseCodes.remove(course.code) }
+        } else {
+            for course in group.courses { selectedCourseCodes.insert(course.code) }
+        }
+    }
+
     private func addSelected() async {
         guard let plan else { return }
         let courses = plan.periods
@@ -161,6 +179,26 @@ private struct StudyProgramPlanPicker: View {
         let deduplicated = courses.filter { seen.insert($0.code).inserted }
         await viewModel.addStudyPlanCourses(deduplicated)
         dismiss()
+    }
+}
+
+/// Semester-seksjonsoverskrift med en "velg alle / fjern alle"-knapp, slik at man kan
+/// huke av et helt semester i ett trykk i stedet for hvert emne enkeltvis — og likevel
+/// justere enkeltemner etterpå via radene under.
+private struct SemesterSectionHeader: View {
+    let title: String
+    let allSelected: Bool
+    let toggle: () -> Void
+
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Button(allSelected ? "Fjern alle" : "Velg alle", action: toggle)
+                .font(.caption)
+                .buttonStyle(.borderless)
+                .textCase(nil)
+        }
     }
 }
 
