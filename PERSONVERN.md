@@ -2,7 +2,7 @@
 
 *Sist oppdatert: 9. september 2026*
 
-NTNU Timeplan er en iOS-app utviklet av Tormod Baa (Trondheim, Norge) som viser undervisningsplaner for emner ved NTNU. Denne erklæringen forklarer hvilke opplysninger appen behandler.
+NTNU Timeplan er en iOS-app utviklet og driftet av Tormod Bårsaune, gjennom enkeltpersonforetaket Bårsaune Development (org.nr. 937 681 208), Stjørdal, som viser undervisningsplaner for emner ved NTNU. Denne erklæringen forklarer hvilke opplysninger appen behandler.
 
 ## Hvilke opplysninger appen behandler
 
