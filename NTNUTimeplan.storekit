@@ -51,7 +51,7 @@
               "locale" : "nb"
             }
           ],
-          "productID" : "no.tormod.ntnutimeplan.yearly",
+          "productID" : "no.tormod.ntnutimeplan.annual",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Årlig",
           "subscriptionGroupID" : "21600001",

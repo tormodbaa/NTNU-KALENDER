@@ -12,7 +12,7 @@ import StoreKit
 @MainActor
 final class SubscriptionManager: ObservableObject {
     /// Må stemme nøyaktig med produkt-ID-en i App Store Connect og `NTNUTimeplan.storekit`.
-    static let yearlyProductID = "no.tormod.ntnutimeplan.yearly"
+    static let yearlyProductID = "no.tormod.ntnutimeplan.annual"
 
     @Published private(set) var product: Product?
     @Published private(set) var isSubscribed = false
