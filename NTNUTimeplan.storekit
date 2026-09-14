@@ -1,0 +1,67 @@
+{
+  "identifier" : "5B7C0C4E-2A6B-4D2C-9E0B-7B1A2F3C4D5E",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "",
+    "_developerTeamID" : "24T86MDB5Y",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "nb_NO",
+    "_storefront" : "NOR",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21600001",
+      "localizations" : [
+        {
+          "description" : "Full tilgang til NTNU Timeplan",
+          "displayName" : "NTNU Timeplan",
+          "locale" : "nb"
+        }
+      ],
+      "name" : "NTNU Timeplan",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "49.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740000001",
+          "introductoryOffer" : {
+            "internalID" : "6740000002",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Alle emner, varsler og eksport – hele studieåret.",
+              "displayName" : "NTNU Timeplan Årlig",
+              "locale" : "nb"
+            }
+          ],
+          "productID" : "no.tormod.ntnutimeplan.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Årlig",
+          "subscriptionGroupID" : "21600001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

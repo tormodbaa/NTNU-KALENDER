@@ -6,7 +6,14 @@ import UserNotifications
 final class ScheduleViewModel: ObservableObject {
     @Published private(set) var timeplaner: [Timeplan] = []
     @Published private(set) var activeTimeplanID: Timeplan.ID
-    @Published private(set) var events: [ScheduleEvent] = []
+    @Published private(set) var events: [ScheduleEvent] = [] {
+        didSet { regroupEventsByDay() }
+    }
+    /// Hendelser gruppert per dag (nøkkel = `startOfDay()`), sortert etter starttid.
+    /// Regnes ut én gang hver gang `events` endres — ikke i `ScheduleView.body` for
+    /// hver eneste re-tegning (som skjer flere ganger i sekundet mens man sveiper
+    /// mellom dager). Det var en av årsakene til at dag-bytte hakket.
+    @Published private(set) var eventsByDay: [Date: [ScheduleEvent]] = [:]
     @Published private(set) var conflictingEventIDs: Set<String> = []
 
     @Published var searchQuery: String = "" { didSet { runSearch() } }
@@ -60,6 +67,17 @@ final class ScheduleViewModel: ObservableObject {
     }
 
     var selectedCourses: [SelectedCourse] { activeTimeplan.courses }
+
+    /// Emnekode → farge, som oppslagstabell. Kalenderen slår opp farge for hver
+    /// hendelse den tegner; et lineært søk i `selectedCourses` per hendelse er unødvendig.
+    var courseColors: [String: Color] {
+        Dictionary(selectedCourses.map { ($0.code, $0.color.color) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    private func regroupEventsByDay() {
+        eventsByDay = Dictionary(grouping: events) { $0.start.startOfDay() }
+            .mapValues { $0.sorted { $0.start < $1.start } }
+    }
 
     init() {
         let loaded = Self.loadPersistedTimeplaner()

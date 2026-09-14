@@ -13,27 +13,13 @@ struct DayPagerView: View {
     var body: some View {
         TabView(selection: $selectedDay) {
             ForEach(days, id: \.self) { day in
-                VStack(spacing: 2) {
-                    Text(day.formatted("EEEE d. MMMM"))
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.top, 4)
-
-                    let dayEvents = (eventsByDay[day] ?? []).sorted { $0.start < $1.start }
-                    if dayEvents.isEmpty {
-                        Spacer()
-                        Text("Ingen undervisning denne dagen")
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    } else {
-                        DayTimelineView(
-                            day: day,
-                            events: dayEvents,
-                            colorFor: colorFor,
-                            hasConflict: hasConflict,
-                            onTap: onTap
-                        )
-                    }
-                }
+                DayPage(
+                    day: day,
+                    events: eventsByDay[day] ?? [],
+                    colorFor: colorFor,
+                    hasConflict: hasConflict,
+                    onTap: onTap
+                )
                 .tag(day)
             }
         }
@@ -53,6 +39,41 @@ struct DayPagerView: View {
             // over alltid stemmer med siden som faktisk vises.
             if !Calendar.ntnu.isDate(anchorDate, inSameDayAs: newValue) {
                 anchorDate = newValue
+            }
+        }
+    }
+}
+
+/// Én side i dagvisningen. Egen `View` (ikke inline i `ForEach`) slik at SwiftUI kan
+/// diffe og hoppe over sider hvis dataene deres ikke har endret seg, i stedet for å
+/// bygge alle fem dagene på nytt hver gang `anchorDate` oppdateres under en sveip.
+private struct DayPage: View {
+    let day: Date
+    /// Forventes allerede sortert etter starttid (se `ScheduleViewModel.eventsByDay`).
+    let events: [ScheduleEvent]
+    let colorFor: (String) -> Color
+    let hasConflict: (ScheduleEvent) -> Bool
+    let onTap: (ScheduleEvent) -> Void
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(day.formatted("EEEE d. MMMM"))
+                .font(.subheadline.weight(.semibold))
+                .padding(.top, 4)
+
+            if events.isEmpty {
+                Spacer()
+                Text("Ingen undervisning denne dagen")
+                    .foregroundStyle(.secondary)
+                Spacer()
+            } else {
+                DayTimelineView(
+                    day: day,
+                    events: events,
+                    colorFor: colorFor,
+                    hasConflict: hasConflict,
+                    onTap: onTap
+                )
             }
         }
     }

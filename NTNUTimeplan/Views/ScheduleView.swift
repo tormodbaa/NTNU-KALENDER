@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScheduleView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
+    @EnvironmentObject var subscriptions: SubscriptionManager
 
     @State private var mode: Mode = .week
     @State private var anchorDate: Date = .init()
@@ -40,27 +41,7 @@ struct ScheduleView: View {
                         MissingProgramBanner { showingSettings = true }
                     }
 
-                    Group {
-                        switch mode {
-                        case .week:
-                            WeekGridView(
-                                weekDays: weekDays,
-                                eventsByDay: eventsByDay,
-                                colorFor: colorFor,
-                                hasConflict: viewModel.hasConflict,
-                                onTap: { selectedEvent = $0 }
-                            )
-                        case .day:
-                            DayPagerView(
-                                days: weekDays,
-                                anchorDate: $anchorDate,
-                                eventsByDay: eventsByDay,
-                                colorFor: colorFor,
-                                hasConflict: viewModel.hasConflict,
-                                onTap: { selectedEvent = $0 }
-                            )
-                        }
-                    }
+                    calendarContent
                 }
             }
             .navigationTitle(viewModel.activeTimeplan.name)
@@ -103,7 +84,9 @@ struct ScheduleView: View {
                 TimeplanManagerView().environmentObject(viewModel)
             }
             .sheet(isPresented: $showingSettings) {
-                SettingsView().environmentObject(viewModel)
+                SettingsView()
+                    .environmentObject(viewModel)
+                    .environmentObject(subscriptions)
             }
             .alert(item: $exportAlert) { alert in
                 switch alert.kind {
@@ -112,6 +95,35 @@ struct ScheduleView: View {
                 case .failure(let message):
                     Alert(title: Text("Kunne ikke eksportere"), message: Text(message))
                 }
+            }
+        }
+    }
+
+    /// Skilt ut i egen `View` slik at fargetabellen og dagene bare regnes ut én gang
+    /// per tegning og deles av alle undervisningene, i stedet for ett oppslag per boks.
+    private var calendarContent: some View {
+        let colors = viewModel.courseColors
+        let days = weekDays
+        let conflicts = viewModel.conflictingEventIDs
+        return Group {
+            switch mode {
+            case .week:
+                WeekGridView(
+                    weekDays: days,
+                    eventsByDay: viewModel.eventsByDay,
+                    colorFor: { colors[$0] ?? .gray },
+                    hasConflict: { conflicts.contains($0.id) },
+                    onTap: { selectedEvent = $0 }
+                )
+            case .day:
+                DayPagerView(
+                    days: days,
+                    anchorDate: $anchorDate,
+                    eventsByDay: viewModel.eventsByDay,
+                    colorFor: { colors[$0] ?? .gray },
+                    hasConflict: { conflicts.contains($0.id) },
+                    onTap: { selectedEvent = $0 }
+                )
             }
         }
     }
@@ -165,14 +177,6 @@ struct ScheduleView: View {
     private var weekDays: [Date] {
         let monday = anchorDate.mondayOfWeek()
         return (0..<5).map { monday.addingDays($0) }
-    }
-
-    private var eventsByDay: [Date: [ScheduleEvent]] {
-        Dictionary(grouping: viewModel.events) { $0.start.startOfDay() }
-    }
-
-    private func colorFor(_ courseCode: String) -> Color {
-        viewModel.selectedCourses.first { $0.code == courseCode }?.color.color ?? .gray
     }
 
     private func courseName(for code: String) -> String {

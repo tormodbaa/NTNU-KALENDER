@@ -1,11 +1,14 @@
+import StoreKit
 import SwiftUI
 import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
+    @EnvironmentObject var subscriptions: SubscriptionManager
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingClearConfirmation = false
+    @State private var showingManageSubscriptions = false
     @State private var showingProgramPicker = false
     @State private var calendarName = ""
 
@@ -102,6 +105,35 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    HStack {
+                        Text("Status")
+                        Spacer()
+                        Text(subscriptions.isSubscribed ? "Aktivt" : "Ikke aktivt")
+                            .foregroundStyle(subscriptions.isSubscribed ? .green : .secondary)
+                    }
+                    if subscriptions.isSubscribed, let expiration = subscriptions.expirationDate {
+                        HStack {
+                            Text(subscriptions.willAutoRenew ? "Fornyes" : "Utløper")
+                            Spacer()
+                            Text(expiration.formatted("d. MMMM yyyy"))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    if subscriptions.isSubscribed {
+                        Button("Administrer abonnement") { showingManageSubscriptions = true }
+                    }
+                    Button("Gjenopprett kjøp") {
+                        Task { await subscriptions.restorePurchases() }
+                    }
+                } header: {
+                    Text("Abonnement")
+                } footer: {
+                    if let price = subscriptions.priceLabel {
+                        Text("NTNU Timeplan koster \(price) og fornyes automatisk til det sies opp.")
+                    }
+                }
+
+                Section {
                     Button("Fjern alle emner i \"\(viewModel.activeTimeplan.name)\"", role: .destructive) {
                         showingClearConfirmation = true
                     }
@@ -118,6 +150,7 @@ struct SettingsView: View {
                 }
             }
             .onAppear { calendarName = viewModel.activeTimeplan.name }
+            .manageSubscriptionsSheet(isPresented: $showingManageSubscriptions)
             .task { await viewModel.refreshNotificationPermissionStatus() }
             .confirmationDialog(
                 "Fjerne alle emner i \"\(viewModel.activeTimeplan.name)\"?",
